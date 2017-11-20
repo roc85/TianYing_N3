@@ -177,11 +177,15 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
 //        super.onPause();
 //    }
 //
-//    @Override
-//    public void onResume() {
-//        // TODO Auto-generated method stub
-//        super.onResume();
-//    }
+    @Override
+    public void onResume() {
+        // TODO Auto-generated method stub
+        initData();
+//        LogUtil.i("comm rcv");
+//        CommonUtil.ShowToast(getActivity(),"comm rcv" );
+        totalMsgList.setAdapter(totalMsgAdapter);
+        super.onResume();
+    }
 
     @Subscribe
     public void setContent(Message_DB data) {

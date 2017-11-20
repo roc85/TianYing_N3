@@ -66,7 +66,7 @@ public class SettingFragment extends BaseFragment {
                 }
                 else
                 {
-                    btnTest.setText("开始测试");
+                    btnTest.setText("发送报文");
                     isTesting = false;
                 }
             }
