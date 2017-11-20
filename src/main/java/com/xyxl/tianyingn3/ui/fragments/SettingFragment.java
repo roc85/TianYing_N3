@@ -75,7 +75,7 @@ public class SettingFragment extends BaseFragment {
         btnBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActivity.OpenActivity(false, BluetoothActivity.class);
+                getHoldingActivity().OpenActivity(false, BluetoothActivity.class);
             }
         });
 
