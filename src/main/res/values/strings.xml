@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">天应助手N3</string>
+    <string name="device_name">天应盒子N3</string>
+
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!--log相关-->
+    <string name="app_tag">TianYing_N3</string>
+    <string name="btError_cant_init">无法初始化 BluetoothManager</string>
+    <string name="btError_cant_get_adapter">无法获得 BluetoothAdapter</string>
+    <string name="btError_init">BluetoothAdapter not initialized or unspecified address</string>
+    <string name="no_bt_device_found">没发现蓝牙设备，无法连接</string>
+    <string name="create_new_bt_connect">Trying to create a new connection</string>
+    <string name="bt_connect_failed">蓝牙没有初始化，连接失败</string>
+    <string name="bt_service_open_failed">蓝牙服务开启失败</string>
+    <string name="bt_onoff">蓝牙开关</string>
+    <string name="bt_device_list">蓝牙设备</string>
+    <string name="bt_device_search">搜索</string>
+    <string name="ble_cant_use">本设备不支持BLE</string>
+    <string name="ble_service_bind">BLE服务启动</string>
+    <string name="ble_service_unbind">BLE服务关闭</string>
+    <string name="ble_connect_start">开始连接蓝牙设备</string>
+
+    <string name="data_analyse_error">数据解析异常</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <!--主页相关-->
+    <string name="home">首页</string>
+    <string name="msg">消息</string>
+    <string name="map">地图</string>
+    <string name="me">我的</string>
+
+    <!--对话框相关-->
+    <string name="confirm">确定</string>
+    <string name="esc">取消</string>
+    <string name="donot_connect_bd">确认不连接北斗设备？</string>
+
+    <!--报文消息相关-->
+    <string name="no_msg">无消息</string>
+</resources>
