@@ -34,6 +34,16 @@ public class BdCardBean {
         return  instance;
     }
 
+    private static final int CARD_NUM_MAX = 7;//北斗卡号位数
+    public static String FormatCardNum(String num)
+    {
+        while(num.length()<CARD_NUM_MAX)
+        {
+            num = "0" + num;
+        }
+        return num;
+    }
+
     public void setBdCard(String num, int serFreq, int cLv, int bLen, String rem)
     {
         idNum = num;

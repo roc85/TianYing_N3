@@ -13,9 +13,9 @@ import java.io.Serializable;
  */
 
 public class Message_DB extends SugarRecord implements Serializable {
-    @Column(name = "msg_ID", unique = true, notNull = true)
-    @Expose
-    private long msgId; //消息id号
+//    @Column(name = "msg_ID", unique = true, notNull = true)
+//    @Expose
+//    private long msgId; //消息id号
 
     @Expose
     //消息发送方地址
@@ -61,13 +61,13 @@ public class Message_DB extends SugarRecord implements Serializable {
     //消息附加说明
     private String remark;
 
-    public long getMsgId() {
-        return msgId;
-    }
-
-    public void setMsgId(long msgId) {
-        this.msgId = msgId;
-    }
+//    public long getMsgId() {
+//        return msgId;
+//    }
+//
+//    public void setMsgId(long msgId) {
+//        this.msgId = msgId;
+//    }
 
     public String getSendAddress() {
         return sendAddress;

@@ -26,6 +26,7 @@ import com.squareup.otto.Subscribe;
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bean.BtConnectInfo;
+import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;

@@ -1,5 +1,8 @@
 package com.xyxl.tianyingn3.util;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import com.xyxl.tianyingn3.logs.LogUtil;
 
 /**
@@ -10,6 +13,10 @@ import com.xyxl.tianyingn3.logs.LogUtil;
 
 public class CommonUtil {
 
+    public static void ShowToast(Context c, String con)
+    {
+        Toast.makeText(c,con,Toast.LENGTH_SHORT).show();
+    }
     /**
      * 字符串转int，无效时返回0
      *

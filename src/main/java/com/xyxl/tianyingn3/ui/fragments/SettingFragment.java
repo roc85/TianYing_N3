@@ -57,11 +57,12 @@ public class SettingFragment extends BaseFragment {
 //                AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendICA(0, 0),null));
                 if(btnTest.getText().equals("发送报文"))
                 {
-//                    btnTest.setText("测试中");
-//                    TestMsg.getInstance().ClearDatas();
-//                    textResult.setText(TestMsg.getInstance().toString());
-//                    isTesting = true;
-                    AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA("306631", 1, 2, TestMsg.TEST_MSG), null));
+                    btnTest.setText("测试中");
+                    TestMsg.getInstance().ClearDatas();
+                    textResult.setText(TestMsg.getInstance().toString());
+                    isTesting = true;
+                    mHandler.sendEmptyMessage(1);
+//                    AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA("306631", 1, 2, TestMsg.TEST_MSG), null));
                 }
                 else
                 {
@@ -96,7 +97,7 @@ public class SettingFragment extends BaseFragment {
                     {
                         AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA(BdCardBean.getInstance().getIdNum(), 1, 2, TestMsg.TEST_MSG), null));
                         Toast.makeText(getActivity(),"发送中",Toast.LENGTH_SHORT).show();
-
+                        mHandler.sendEmptyMessageDelayed(1,62*1000);
                     }
                     break;
                 case 2: // Notify change

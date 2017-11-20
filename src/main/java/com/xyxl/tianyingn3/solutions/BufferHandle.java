@@ -272,7 +272,7 @@ public class BufferHandle {
             Str=BdSdk_v2_1.BD_ReceiveICI(s);
 
             //向全局变量添加IC信息
-            BdCardBean.getInstance().setIdNum(Str[1]);
+            BdCardBean.getInstance().setIdNum(BdCardBean.FormatCardNum(Str[1]));
             BdCardBean.getInstance().setServiceFrequency(CommonUtil.Str2int(Str[5]));
             BdCardBean.getInstance().setCardLv(CommonUtil.Str2int(Str[6]));
             LogUtil.i(BdCardBean.getInstance().toString());
@@ -337,7 +337,7 @@ public class BufferHandle {
         {
             Str=BdSdk_v2_1.BD_ReceiveFKI(s);
             LogUtil.i("测试发送反馈"+s);
-
+            TestMsg.getInstance().AddSendOkNum();
             //指令执行成功时
             if(Str[2].equals("Y"))
             {
@@ -372,25 +372,34 @@ public class BufferHandle {
             }
 
             //测试用
-//            TestMsg.getInstance().AddRcvNum();
+            TestMsg.getInstance().AddRcvNum();
 //            MessageBean messageBean = new MessageBean();
 //            messageBean.setSendAddress(BdCardBean.getInstance().getIdNum());
 //            messageBean.setMsgCon(Str[5]);
 
             Message_DB msgDb = new Message_DB();
-            msgDb.setRcvAddress(BdCardBean.getInstance().getIdNum());
-            msgDb.setRcvUserName(BdCardBean.getInstance().getIdNum());
-            msgDb.setSendAddress(Str[2]);
-            msgDb.setSendUserName(Str[2]);
-            msgDb.setMsgTime(System.currentTimeMillis());
-            msgDb.setMsgType(1);
-            msgDb.setMsgSendStatue(1);
-            msgDb.setMsgCon(Str[5]);
-            msgDb.setMsgPos("");
-            msgDb.setRemark("");
-            msgDb.setDelFlag(0);
+            try
+            {
+                msgDb.setRcvAddress(BdCardBean.getInstance().getIdNum());
+                msgDb.setRcvUserName(BdCardBean.getInstance().getIdNum());
+                msgDb.setSendAddress(Str[2]);
+                msgDb.setSendUserName(Str[2]);
+                msgDb.setMsgTime(System.currentTimeMillis());
+                msgDb.setMsgType(1);
+                msgDb.setMsgSendStatue(1);
+                msgDb.setMsgCon(Str[5]);
+                msgDb.setMsgPos("");
+                msgDb.setRemark("");
+                msgDb.setDelFlag(0);
 
-            msgDb.save();
+                long _id = msgDb.save();
+                LogUtil.i(_id+" saved");
+
+            }
+            catch(Exception e)
+            {
+                LogUtil.e(e.toString());
+            }
 
             return msgDb;
 

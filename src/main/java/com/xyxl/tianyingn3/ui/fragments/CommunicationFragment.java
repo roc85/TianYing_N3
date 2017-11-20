@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
 import com.xyxl.tianyingn3.ui.customview.TotalMsgAdapter;
+import com.xyxl.tianyingn3.util.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +85,7 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
                 ShowToast("New Msg");
                 Intent intent = new Intent(getActivity(), NewMsgActivity.class);
                 startActivity(intent);
+
             }
         });
 
@@ -101,20 +104,25 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
     private void initData() {
         try
         {
-            Message_DB msgDb = new Message_DB();
-            msgDb.setMsgId(1);
-            msgDb.setRcvAddress("");
-            msgDb.setRcvUserName("22");
-            msgDb.setMsgType(0);
-            msgDb.setMsgCon("123");
-            msgDb.setMsgTime(System.currentTimeMillis());
-            msgDb.setSendUserName("11");
-            msgDb.save();
+//            Message_DB msgDb = new Message_DB();
+//            msgDb.setMsgId(1);
+//            msgDb.setRcvAddress("");
+//            msgDb.setRcvUserName("22");
+//            msgDb.setMsgType(0);
+//            msgDb.setMsgCon("123");
+//            msgDb.setMsgTime(System.currentTimeMillis());
+//            msgDb.setSendUserName("11");
+//            msgDb.save();
 
-//            totalMsgDatas = Message_DB.find(Message_DB.class,"sendAddress = ? OR rcvAddress = ?",
-//                    new String[]{BdCardBean.getInstance().getIdNum(),BdCardBean.getInstance().getIdNum()},
-//                    null,"msgTime desc",null);
-            totalMsgDatas = Message_DB.listAll(Message_DB.class);
+            String myCardNum = BdCardBean.getInstance().getIdNum();
+            if(TextUtils.isEmpty(myCardNum))
+            {
+                myCardNum = "0306631";
+            }
+            totalMsgDatas = Message_DB.find(Message_DB.class,"send_Address = ? OR rcv_Address = ?",
+                    new String[]{myCardNum, myCardNum},
+                    null,"msg_Time desc",null);
+//            totalMsgDatas = Message_DB.listAll(Message_DB.class);
         }
         catch(Error e)
         {
@@ -142,40 +150,44 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
                              Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         View view = inflater.inflate(R.layout.fragment_communication, container, false);
+
         initData();
 
         initView(view);
+
         return view;
     }
 
-    @Override
-    public void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
-
-    }
-
-    @Override
-    public void onDestroyView() {
-        // TODO Auto-generated method stub
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onPause() {
-        // TODO Auto-generated method stub
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        // TODO Auto-generated method stub
-        super.onResume();
-    }
+//    @Override
+//    public void onDestroy() {
+//        // TODO Auto-generated method stub
+//        super.onDestroy();
+//
+//    }
+//
+//    @Override
+//    public void onDestroyView() {
+//        // TODO Auto-generated method stub
+//        super.onDestroyView();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        // TODO Auto-generated method stub
+//        super.onPause();
+//    }
+//
+//    @Override
+//    public void onResume() {
+//        // TODO Auto-generated method stub
+//        super.onResume();
+//    }
 
     @Subscribe
     public void setContent(Message_DB data) {
         initData();
+        LogUtil.i("comm rcv");
+        CommonUtil.ShowToast(getActivity(),"comm rcv" );
         totalMsgList.setAdapter(totalMsgAdapter);
     }
 

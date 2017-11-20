@@ -89,7 +89,6 @@ public class MessageFragment extends BaseFragment {
             @Override
             public void onPageScrolled(int arg0, float arg1, int arg2) {
                 /**说明：     */
-                LogUtil.e("ED:"+arg0+" "+arg1+" "+arg2);
                 if(arg0<currentIndex)
                 {
                     titleTexts[currentIndex].setTextColor(Color.argb(0xFF,(int)(0xFF*arg1),0x00,0x00));
