@@ -372,27 +372,27 @@ public class BufferHandle {
             }
 
             //测试用
-            TestMsg.getInstance().AddRcvNum();
-            MessageBean messageBean = new MessageBean();
-            messageBean.setSendAddress(BdCardBean.getInstance().getIdNum());
-            messageBean.setMsgCon(Str[5]);
+//            TestMsg.getInstance().AddRcvNum();
+//            MessageBean messageBean = new MessageBean();
+//            messageBean.setSendAddress(BdCardBean.getInstance().getIdNum());
+//            messageBean.setMsgCon(Str[5]);
 
-//            Message_DB msgDb = new Message_DB();
-//            msgDb.setRcvAddress(BdCardBean.getInstance().getIdNum());
-//            msgDb.setRcvUserName(BdCardBean.getInstance().getIdNum());
-//            msgDb.setSendAddress(Str[2]);
-//            msgDb.setSendUserName(Str[2]);
-//            msgDb.setMsgTime(System.currentTimeMillis());
-//            msgDb.setMsgType(1);
-//            msgDb.setMsgSendStatue(1);
-//            msgDb.setMsgCon(Str[5]);
-//            msgDb.setMsgPos("");
-//            msgDb.setRemark("");
-//            msgDb.setDelFlag(0);
-//
-//            msgDb.save();
+            Message_DB msgDb = new Message_DB();
+            msgDb.setRcvAddress(BdCardBean.getInstance().getIdNum());
+            msgDb.setRcvUserName(BdCardBean.getInstance().getIdNum());
+            msgDb.setSendAddress(Str[2]);
+            msgDb.setSendUserName(Str[2]);
+            msgDb.setMsgTime(System.currentTimeMillis());
+            msgDb.setMsgType(1);
+            msgDb.setMsgSendStatue(1);
+            msgDb.setMsgCon(Str[5]);
+            msgDb.setMsgPos("");
+            msgDb.setRemark("");
+            msgDb.setDelFlag(0);
 
-            return messageBean;
+            msgDb.save();
+
+            return msgDb;
 
 
 //            if(globalData.getAppWorkType() == MORE_REPORT&&Str[5].contains("SJXX"))

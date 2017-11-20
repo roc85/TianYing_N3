@@ -80,20 +80,20 @@ public class TotalMsgAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-//        if(entity.getMsgType() == 0)
-//        {
-//            viewHolder.tvName.setText(entity.getRcvUserName());
-//
-//        }
-//        else if(entity.getMsgType() == 1)
-//        {
-//            viewHolder.tvName.setText(entity.getSendUserName());
-//
-//        }
-//
-//        viewHolder.tvTime.setText(TimeUtil.formatFriendly(new Date(entity.getMsgTime())));
-//
-//        viewHolder.tvCon.setText(entity.getMsgCon().length() > 10?(entity.getMsgCon().substring(0,10)+"..."):entity.getMsgCon());
+        if(entity.getMsgType() == 0)
+        {
+            viewHolder.tvName.setText(entity.getRcvUserName());
+
+        }
+        else if(entity.getMsgType() == 1)
+        {
+            viewHolder.tvName.setText(entity.getSendUserName());
+
+        }
+
+        viewHolder.tvTime.setText(TimeUtil.formatFriendly(new Date(entity.getMsgTime())));
+
+        viewHolder.tvCon.setText(entity.getMsgCon().length() > 10?(entity.getMsgCon().substring(0,10)+"..."):entity.getMsgCon());
 
         return convertView;
     }
