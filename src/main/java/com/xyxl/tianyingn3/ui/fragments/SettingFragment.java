@@ -6,6 +6,7 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class SettingFragment extends BaseFragment {
     private Chronometer timer;
 
     private boolean isTesting = false;
+
+    private RelativeLayout btSetBox;
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
 
@@ -79,7 +82,13 @@ public class SettingFragment extends BaseFragment {
             }
         });
 
-//        mHandler.sendEmptyMessageDelayed(1,62*1000);
+        btSetBox = (RelativeLayout)view.findViewById(R.id.btSetBox);
+        btSetBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getHoldingActivity().OpenActivity(false, BluetoothActivity.class);
+            }
+        });
     }
 
     @Override

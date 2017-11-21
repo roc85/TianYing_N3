@@ -80,6 +80,11 @@
     <!--联系人相关-->
     <string name="this_device">#本机#</string>
 
+    <!--设置页面相关-->
+    <string name="login_or_register">登录/注册</string>
+    <string name="bt_set">设备连接</string>
+    <string name="pos_set">定位设置</string>
+
     <!--联系人布局相关-->
     <array name="waveSideBarLetters">
         <item>\u0023</item>

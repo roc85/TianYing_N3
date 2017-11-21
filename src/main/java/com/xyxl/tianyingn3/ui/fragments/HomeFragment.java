@@ -19,7 +19,9 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -35,6 +37,7 @@ import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.logs.LogUtil;
+import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
 import com.xyxl.tianyingn3.ui.customview.ClearEditText;
 import com.xyxl.tianyingn3.ui.customview.CompassView;
 import com.xyxl.tianyingn3.ui.customview.HomeNoticeAdapter;
@@ -72,6 +75,7 @@ public class HomeFragment extends BaseFragment {
     private RelativeLayout infosBox;
     private ImageView ivOpenInfos;
     private Chronometer beamTimer;
+    private LinearLayout btnBox;
 
     private ListView noticeList;
     private List<Notice_DB> noticeDatas;
@@ -146,6 +150,8 @@ public class HomeFragment extends BaseFragment {
         noticeList = (ListView)view.findViewById(R.id.homeList);
         ivOpenInfos = (ImageView)view.findViewById(R.id.ivOpenInfos);
         beamTimer = (Chronometer)view.findViewById(R.id.beamTimer);
+        btnBox = (LinearLayout) view.findViewById(R.id.btnBox);
+        RefreshBtnBox();
 
         beamTimer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
@@ -194,6 +200,41 @@ public class HomeFragment extends BaseFragment {
 
     }
 
+    private void RefreshBtnBox() {
+        Button btn = new Button(getHoldingActivity());
+        btn.setText("SOS");
+        btnBox.addView(btn);
+
+        Button btn1 = new Button(getHoldingActivity());
+        btn1.setText("SOS");
+        btnBox.addView(btn1);
+
+        Button btn2 = new Button(getHoldingActivity());
+        btn2.setText("SOS");
+        btnBox.addView(btn2);
+
+        Button btn3 = new Button(getHoldingActivity());
+        btn3.setText("SOS");
+        btnBox.addView(btn3);
+
+        Button btn4 = new Button(getHoldingActivity());
+        btn4.setText("SOS");
+        btnBox.addView(btn4);
+
+        Button btn5 = new Button(getHoldingActivity());
+        btn5.setText("SOS");
+        btnBox.addView(btn5);
+
+        Button  btnNew = new Button(getHoldingActivity());
+        btnNew.setText("新报文S");
+        btnNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getHoldingActivity().OpenActivity(false, NewMsgActivity.class);
+            }
+        });
+        btnBox.addView(btnNew);
+    }
 
 
     private boolean GetBoxHeight()
