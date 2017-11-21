@@ -20,6 +20,8 @@ public class BdCardBean {
     private int enableBytesLen;
     //波束状态
     private int[] beamLvs;
+    //当前发送消息id
+    private long msgSendingId = -1;
     //备注说明
     private String remark;
 
@@ -44,24 +46,24 @@ public class BdCardBean {
         return num;
     }
 
-    public void setBdCard(String num, int serFreq, int cLv, int bLen, String rem)
-    {
-        idNum = num;
-        serviceFrequency = serFreq;
-        cardLv = cLv;
-        enableBytesLen = bLen;
-        remark = rem;
-    }
-
-    public void setBdCard(String num, int serFreq, int cLv, int bLen)
-    {
-        setBdCard(num,serFreq,cLv,bLen,null);
-    }
-
-    public void setBdCard(String num, int serFreq, int cLv)
-    {
-        setBdCard(num,serFreq,cLv, FinalDatas.BD_BYTES_LENS[cLv],null);
-    }
+//    public void setBdCard(String num, int serFreq, int cLv, int bLen, String rem)
+//    {
+//        idNum = num;
+//        serviceFrequency = serFreq;
+//        cardLv = cLv;
+//        enableBytesLen = bLen;
+//        remark = rem;
+//    }
+//
+//    public void setBdCard(String num, int serFreq, int cLv, int bLen)
+//    {
+//        setBdCard(num,serFreq,cLv,bLen,null);
+//    }
+//
+//    public void setBdCard(String num, int serFreq, int cLv)
+//    {
+//        setBdCard(num,serFreq,cLv, FinalDatas.BD_BYTES_LENS[cLv],null);
+//    }
 
     @Override
     public String toString() {
@@ -71,6 +73,14 @@ public class BdCardBean {
             beams+=(beamLvs[i]+"");
         }
         return "BD Card:"+idNum+" serviceFrequency:"+serviceFrequency+" CardLv:"+cardLv+"\nBeams:"+beams;
+    }
+
+    public long getMsgSendingId() {
+        return msgSendingId;
+    }
+
+    public void setMsgSendingId(long msgSendingId) {
+        this.msgSendingId = msgSendingId;
     }
 
     public String getIdNum() {

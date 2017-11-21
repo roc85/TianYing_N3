@@ -6,16 +6,32 @@
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true">
-    <com.xyxl.tianyingn3.ui.customview.ClearEditText
-        android:id="@+id/filter_edit"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:background="#bef9b81b"
-        android:drawableLeft="@drawable/search_bar_icon_normal"
-        android:hint="请输入关键字"
-        android:maxLines="1"
-        android:textSize="15dp" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/addContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@android:drawable/ic_input_add" />
+
+        <com.xyxl.tianyingn3.ui.customview.ClearEditText
+            android:id="@+id/filter_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#bef9b81b"
+            android:drawableLeft="@drawable/search_bar_icon_normal"
+            android:hint="请输入关键字"
+            android:maxLines="1"
+            android:paddingLeft="8dp"
+            android:layout_toLeftOf="@id/addContact"
+            android:textSize="15dp" />
+    </RelativeLayout>
+
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -30,14 +46,14 @@
         <com.xyxl.tianyingn3.ui.customview.WaveSideBar
             android:id="@+id/sideBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:chooseTextColor="@android:color/white"
-            app:textColor="#969696"
+            android:layout_height="wrap_content"
             app:backgroundColor="#bef9b81b"
-            app:textSize="10sp"
+            app:chooseTextColor="@android:color/white"
+            app:circleRadius="24dp"
             app:hintTextSize="32sp"
             app:radius="20dp"
-            app:circleRadius="24dp"/>
+            app:textColor="#969696"
+            app:textSize="10sp" />
 
     </FrameLayout>
 </LinearLayout>

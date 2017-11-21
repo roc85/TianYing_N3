@@ -139,8 +139,31 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
                                 else
                                 {
                                     AppBus.getInstance().post(new BTDeviceInfos(device.getName(), device.getAddress(), 0));
+                                    ShowToast(getResources().getString(R.string.connectting));
                                     SettingSharedPreference.setDataString(BluetoothActivity.this,BT_DEVICE_NAME,device.getName());
                                     SettingSharedPreference.setDataString(BluetoothActivity.this,BT_DEVICE_MAC,device.getAddress());
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            boolean running = true;
+                                            long startTime = System.currentTimeMillis();
+                                            int passTime = 0;
+                                            while(running)
+                                            {
+                                                passTime = (int) (System.currentTimeMillis() - startTime);
+                                                if(BtConnectInfo.getInstance().isConnect())
+                                                {
+                                                    running = false;
+                                                    mHandler.sendEmptyMessage(100);
+                                                }
+                                                else if(passTime > 15*1000)
+                                                {
+                                                    running = false;
+                                                    ShowToast(getResources().getString(R.string.connected_failed));
+                                                }
+                                            }
+                                        }
+                                    }).start();
                                 }
                                 // intent.putExtra(BleSearchActivity.EXTRAS_DEVICE_NAME,
                                 // device.getName());
@@ -156,7 +179,7 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
 //                                    mScanning = false;
 //                                }
 //                                startActivity(intent);
-                                BluetoothActivity.this.finish();
+//                                BluetoothActivity.this.finish();
                             }
 
                         });
@@ -334,6 +357,9 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
             switch (msg.what) {
                 case 1: // Notify change
                     mLeDeviceListAdapter.notifyDataSetChanged();
+                    break;
+                case 100: //
+                    finish();
                     break;
             }
         }

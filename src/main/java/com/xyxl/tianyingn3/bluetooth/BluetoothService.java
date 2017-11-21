@@ -26,7 +26,10 @@ import com.squareup.otto.Subscribe;
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bean.BtConnectInfo;
+import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
+import com.xyxl.tianyingn3.database.Notice_DB;
+import com.xyxl.tianyingn3.global.App;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;
@@ -178,6 +181,51 @@ public class BluetoothService extends Service implements FinalDatas{
             switch (msg.what) {
                 case 1: // Notify change
                     AppBus.getInstance().post(msg.obj);
+                    if(msg.obj instanceof Message_DB)
+                    {
+                        try
+                        {
+                            Message_DB mTmp = (Message_DB) msg.obj;
+                            if(mTmp.getMsgType() == 1)
+                            {
+                                Notice_DB n = new Notice_DB();
+                                n.setNoticeType(0);
+                                n.setNoticeTime(mTmp.getMsgTime());
+                                n.setNoticeRemark("");
+                                n.setNoticeNum(mTmp.getId()+"");
+                                n.setNoticeAddress(mTmp.getRcvAddress());
+                                n.setNoticeCon("收到来自【"+mTmp.getSendUserName()+"】的北斗报文");
+                                n.save();
+                                AppBus.getInstance().post(n);
+                            }
+
+                        }
+                        catch(Exception e)
+                        {
+                            LogUtil.e(e.toString());
+                        }
+
+                    }
+                    else if(msg.obj instanceof BdCardBean)
+                    {
+                        List<Contact_DB> cList = Contact_DB.find(Contact_DB.class,"contact_Name = ?",getResources().getString(R.string.this_device));
+                        if(cList.size() > 0)
+                        {
+                            Contact_DB cTmp = cList.get(0);
+                            cTmp.setContactName(getResources().getString(R.string.this_device));
+                            cTmp.setBdNum(BdCardBean.getInstance().getIdNum());
+                            long id = cTmp.save();
+                            LogUtil.i(id+"");
+                        }
+                        else
+                        {
+                            Contact_DB cTmp = new Contact_DB();
+                            cTmp.setContactName(getResources().getString(R.string.this_device));
+                            cTmp.setBdNum(BdCardBean.getInstance().getIdNum());
+                            long id = cTmp.save();
+                            LogUtil.i(id+"");
+                        }
+                    }
                     break;
                 case 2: // Notify change
                     Toast.makeText(BluetoothService.this, (String)msg.obj, Toast.LENGTH_SHORT).show();
@@ -329,6 +377,7 @@ public class BluetoothService extends Service implements FinalDatas{
     public void close()
     {
         BtConnectInfo.getInstance().setConnect(false);
+        BdCardBean.getInstance().setIdNum("");
         mHandler.sendEmptyMessage(100);
         if (mBluetoothGatt == null)
         {
@@ -410,6 +459,7 @@ public class BluetoothService extends Service implements FinalDatas{
 //                    mBufferHandle.ClearBdData(0);
 //                    globalData.setDataSourceInputType(0);
                     BtConnectInfo.getInstance().setConnect(false);
+                    BdCardBean.getInstance().setIdNum("");
                     mHandler.sendEmptyMessage(100);
                     mBluetoothGatt.close();
                     mBluetoothGatt = null;
@@ -419,6 +469,7 @@ public class BluetoothService extends Service implements FinalDatas{
             else
             {
                 BtConnectInfo.getInstance().setConnect(false);
+                BdCardBean.getInstance().setIdNum("");
                 mHandler.sendEmptyMessage(100);
 
             }

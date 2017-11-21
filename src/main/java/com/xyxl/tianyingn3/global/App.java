@@ -60,15 +60,12 @@ public class App extends Application{
         //初始化百度地图
         SDKInitializer.initialize(this);
 
-
+        //初始化数据缓冲区分析方法BufferHandle
+        BufferHandle.getInstance().setContext(getApplicationContext());
 //
-//
-//        //初始化数据缓冲区分析方法BufferHandle
-//        BufferHandle.getInstance().setContext(getApplicationContext());
-//
-//        //代码崩溃记录
-//        ExceptionHandler mCustomCrashHandler = ExceptionHandler.getInstance();
-//        mCustomCrashHandler.setCustomCrashHanler(this);
+        //代码崩溃记录
+        ExceptionHandler mCustomCrashHandler = ExceptionHandler.getInstance();
+        mCustomCrashHandler.setCustomCrashHanler(this);
 
         //友盟
 //        MobclickAgent.setDebugMode(true);

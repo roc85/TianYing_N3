@@ -108,7 +108,7 @@ public class MessageFragment extends BaseFragment {
             @Override
             public void onPageScrollStateChanged(int arg0) {
                 /**说明：     */
-                LogUtil.e("CHANGE:"+arg0);
+
 
             }
         });
@@ -129,7 +129,7 @@ public class MessageFragment extends BaseFragment {
                 textMsg.setTextColor(0xFF000000);
                 textContract.setTextColor(0xFFFF0000);
                 textGroup.setTextColor(0xFF000000);
-                viewFragment.setCurrentItem(2);
+                viewFragment.setCurrentItem(1);
                 currentIndex = 1;
             }
         });

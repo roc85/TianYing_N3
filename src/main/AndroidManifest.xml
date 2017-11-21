@@ -125,12 +125,17 @@
         <activity
             android:name=".ui.activities.MainActivity"
             android:label="@string/title_activity_main"
-            />
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".ui.activities.SosActivity" />
         <activity android:name=".ui.activities.SearchActivity" />
-        <activity android:name=".ui.activities.ChatActivity" />
-        <activity android:name=".ui.activities.NewMsgActivity" />
-        <activity android:name=".ui.activities.NewContractActivity" />
+        <activity android:name=".ui.activities.ChatActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+        <activity
+            android:name=".ui.activities.NewMsgActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.activities.NewContactActivity"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".ui.activities.ContractInfoActivity" />
 
     </application>

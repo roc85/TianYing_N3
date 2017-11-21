@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.xyxl.tianyingn3.R;
+import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Msg_DB;
+import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.logs.LogUtil;
 
 import java.security.Key;
@@ -27,9 +29,34 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        initData();
 
-        mHandler.sendEmptyMessageDelayed(0,2000);
+        mHandler.sendEmptyMessageDelayed(0,1000);
 
+    }
+
+    private void initData() {
+        //去除【本机】联系人
+        List<Contact_DB> cList = Contact_DB.find(Contact_DB.class,"contact_Name = ?", getResources().getString(R.string.this_device));
+        if(cList.size()>0)
+        {
+            for(int i=0;i<cList.size();i++)
+            {
+                cList.get(i).delete();
+            }
+        }
+
+        //去除上次剩余通知
+        Notice_DB.deleteAll(Notice_DB.class);
+
+        Notice_DB n = new Notice_DB();
+        n.setNoticeType(1);
+        n.setNoticeTime(System.currentTimeMillis());
+        n.setNoticeRemark("");
+        n.setNoticeNum("");
+        n.setNoticeAddress("");
+        n.setNoticeCon("欢迎使用天应助手N3");
+        n.save();
     }
 
     //创建一个handler，内部完成处理消息方法

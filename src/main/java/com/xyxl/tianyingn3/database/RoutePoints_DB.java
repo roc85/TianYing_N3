@@ -6,15 +6,24 @@ import com.orm.dsl.Column;
 import java.io.Serializable;
 
 /**
- * Created by Administrator on 2017/11/14 10:08
+ * Created by Administrator on 2017/11/14 10:16
  * Version : V1.0
- * Introductions : 位置信息数据库
+ * Introductions : 轨迹点数据库
  */
 
-public class PosInfoDB extends SugarRecord implements Serializable{
-//    @Column(name = "pos_ID", unique = true)
+public class RoutePoints_DB extends SugarRecord implements Serializable {
+//    @Column(name = "point_ID", unique = true)
 //    @Expose
-//    private long posId; //位置信息id号
+//    private long pointId; //轨迹点id号
+//
+//    @Expose
+//    private long routeId; //所属轨迹id号
+//
+//    @Expose
+//    private String pointName;//轨迹点名称
+//
+//    @Expose
+//    private long pointTime;//轨迹点创建时间
 //
 //    @Expose
 //    private double lon; //经度
@@ -32,23 +41,38 @@ public class PosInfoDB extends SugarRecord implements Serializable{
 //    private float direction; //方位
 //
 //    @Expose
-//    private String userName; //所属用户
+//    private String remark;//轨迹备注
 //
-//    @Expose
-//    private String userNum; //所属卡号
-//
-//    @Expose
-//    private long time; //获取时间
-//
-//    @Expose
-//    private String remark; //备注
-//
-//    public long getPosId() {
-//        return posId;
+//    public long getPointId() {
+//        return pointId;
 //    }
 //
-//    public void setPosId(long posId) {
-//        this.posId = posId;
+//    public void setPointId(long pointId) {
+//        this.pointId = pointId;
+//    }
+//
+//    public long getRouteId() {
+//        return routeId;
+//    }
+//
+//    public void setRouteId(long routeId) {
+//        this.routeId = routeId;
+//    }
+//
+//    public String getPointName() {
+//        return pointName;
+//    }
+//
+//    public void setPointName(String pointName) {
+//        this.pointName = pointName;
+//    }
+//
+//    public long getPointTime() {
+//        return pointTime;
+//    }
+//
+//    public void setPointTime(long pointTime) {
+//        this.pointTime = pointTime;
 //    }
 //
 //    public double getLon() {
@@ -89,30 +113,6 @@ public class PosInfoDB extends SugarRecord implements Serializable{
 //
 //    public void setDirection(float direction) {
 //        this.direction = direction;
-//    }
-//
-//    public String getUserName() {
-//        return userName;
-//    }
-//
-//    public void setUserName(String userName) {
-//        this.userName = userName;
-//    }
-//
-//    public String getUserNum() {
-//        return userNum;
-//    }
-//
-//    public void setUserNum(String userNum) {
-//        this.userNum = userNum;
-//    }
-//
-//    public long getTime() {
-//        return time;
-//    }
-//
-//    public void setTime(long time) {
-//        this.time = time;
 //    }
 //
 //    public String getRemark() {

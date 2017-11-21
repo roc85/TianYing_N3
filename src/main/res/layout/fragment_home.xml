@@ -1,12 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
+
+    <Chronometer
+        android:id="@+id/beamTimer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/home" />
-</RelativeLayout>
+        android:visibility="gone" />
+
+    <com.xyxl.tianyingn3.ui.customview.ClearEditText
+        android:id="@+id/searchHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="#bef9b81b"
+        android:drawableLeft="@drawable/search_bar_icon_normal"
+        android:hint="请输入关键字"
+        android:maxLines="1"
+        android:paddingLeft="8dp"
+        android:textSize="15dp" />
+
+    <RelativeLayout
+        android:id="@+id/infosBox"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@+id/searchHome"
+        android:layout_margin="2dp"
+        android:background="@drawable/btn_group_nor"
+        android:padding="2dp">
+
+
+        <ImageView
+            android:id="@+id/ivOpenInfos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            app:srcCompat="@android:drawable/arrow_down_float" />
+
+        <com.xyxl.tianyingn3.ui.customview.CompassView
+            android:id="@+id/compassView"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_alignParentStart="true"
+
+            android:layout_margin="5dp"
+            android:background="@drawable/background_compass"
+            app:srcCompat="@drawable/compass" />
+
+        <RelativeLayout
+            android:id="@+id/addInfoBox"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/compassView">
+
+            <TextView
+                android:id="@+id/textbeams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/ic_launcher" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                app:srcCompat="@mipmap/ic_launcher" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/infoLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_margin="20dp"
+            android:layout_toRightOf="@id/compassView"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textBtConnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textCardNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textComLv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/homeList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:background="@color/ghostwhite"
+        android:visibility="visible" />
+
+</LinearLayout>

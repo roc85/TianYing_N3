@@ -1,5 +1,6 @@
 package com.xyxl.tianyingn3.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,12 +12,19 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.squareup.otto.Subscribe;
 import com.xyxl.tianyingn3.R;
+import com.xyxl.tianyingn3.bean.BdCardBean;
+import com.xyxl.tianyingn3.database.Contact_DB;
+import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.ui.activities.MainActivity;
+import com.xyxl.tianyingn3.ui.activities.NewContactActivity;
 import com.xyxl.tianyingn3.ui.customview.ClearEditText;
 import com.xyxl.tianyingn3.ui.customview.WaveSideBar;
 import com.xyxl.tianyingn3.util.PinyinComparator;
@@ -46,10 +54,13 @@ public class ContactFragment extends Fragment implements FinalDatas {
     private List<SortModel> mDateList;
     private TitleItemDecoration mDecoration;
 
+    private List<Contact_DB> contactDbList;
     /**
      * 根据拼音来排列RecyclerView里面的数据类
      */
     private PinyinComparator mComparator;
+
+    private ImageView ivAddContact;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -94,7 +105,8 @@ public class ContactFragment extends Fragment implements FinalDatas {
         });
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        mDateList = filledData(new String[]{"afjkl","jgo","12254","数据打分","附件是"});
+
+
 
         // 根据a-z进行排序源数据
         Collections.sort(mDateList, mComparator);
@@ -109,7 +121,6 @@ public class ContactFragment extends Fragment implements FinalDatas {
         //如果add两个，那么按照先后顺序，依次渲染。
         mRecyclerView.addItemDecoration(mDecoration);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
-
 
         mClearEditText = (ClearEditText) view.findViewById(R.id.filter_edit);
 
@@ -133,26 +144,41 @@ public class ContactFragment extends Fragment implements FinalDatas {
             }
         });
 
+        //添加联系人按钮
+        ivAddContact = (ImageView)view.findViewById(R.id.addContact);
+        ivAddContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getActivity(), NewContactActivity.class);
+                startActivity(intent);
+
+            }
+        });
     }
 
 
     private void initData() {
+        contactDbList = Contact_DB.listAll(Contact_DB.class);
+        mDateList = filledData(contactDbList);
+
     }
 
     /**
      * 为RecyclerView填充数据
      *
-     * @param date
+     * @param list
      * @return
      */
-    private List<SortModel> filledData(String[] date) {
+    private List<SortModel> filledData(List<Contact_DB> list) {
         List<SortModel> mSortList = new ArrayList<>();
 
-        for (int i = 0; i < date.length; i++) {
+        for (int i = 0; i < list.size(); i++) {
             SortModel sortModel = new SortModel();
-            sortModel.setName(date[i]);
+            sortModel.setName(list.get(i).getContactName());
+            sortModel.setNum(list.get(i).getBdNum());
             //汉字转换成拼音
-            String pinyin = PinyinUtils.getPingYin(date[i]);
+            String pinyin = PinyinUtils.getPingYin(list.get(i).getContactName());
             String sortString = pinyin.substring(0, 1).toUpperCase();
 
             // 正则表达式，判断首字母是否是英文字母
@@ -177,7 +203,7 @@ public class ContactFragment extends Fragment implements FinalDatas {
         List<SortModel> filterDateList = new ArrayList<>();
 
         if (TextUtils.isEmpty(filterStr)) {
-            filterDateList = filledData(new String[]{"afjkl","jgo","12254","数据打分","附件是"});
+            filterDateList = filledData(contactDbList);
         } else {
             filterDateList.clear();
             for (SortModel sortModel : mDateList) {
@@ -235,7 +261,37 @@ public class ContactFragment extends Fragment implements FinalDatas {
     @Override
     public void onResume() {
         // TODO Auto-generated method stub
+        contactDbList = Contact_DB.listAll(Contact_DB.class);
+        List<SortModel> filterDateList = filledData(contactDbList);
+        Collections.sort(filterDateList, mComparator);
+        mDateList.clear();
+        mDateList.addAll(filterDateList);
+        mAdapter.notifyDataSetChanged();
+
         super.onResume();
     }
 
+    @Subscribe
+    public void setContent(Contact_DB data) {
+
+        contactDbList = Contact_DB.listAll(Contact_DB.class);
+        List<SortModel> filterDateList = filledData(contactDbList);
+        Collections.sort(filterDateList, mComparator);
+        mDateList.clear();
+        mDateList.addAll(filterDateList);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //注册到bus事件总线中
+        AppBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AppBus.getInstance().unregister(this);
+    }
 }

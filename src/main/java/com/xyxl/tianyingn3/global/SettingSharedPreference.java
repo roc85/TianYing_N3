@@ -13,7 +13,7 @@ public class SettingSharedPreference {
     public static String getDataString(Context c , String tag)
     {
         String res="";
-        SharedPreferences pre=c.getSharedPreferences("setting", Context.MODE_WORLD_READABLE);
+        SharedPreferences pre=c.getSharedPreferences("setting", Context.MODE_PRIVATE);
         res = pre.getString(tag, null);
         return res;
     }
@@ -21,7 +21,7 @@ public class SettingSharedPreference {
     public static void setDataString(Context c , String tag , String con)
     {
         SharedPreferences.Editor edi=
-                c.getSharedPreferences("setting", Context.MODE_WORLD_WRITEABLE).edit();
+                c.getSharedPreferences("setting", Context.MODE_PRIVATE).edit();
         edi.putString(tag, con);
         edi.commit();
     }
@@ -29,7 +29,7 @@ public class SettingSharedPreference {
     public static int getDataInt(Context c , String tag)
     {
         int res=0;
-        SharedPreferences pre=c.getSharedPreferences("setting", Context.MODE_WORLD_READABLE);
+        SharedPreferences pre=c.getSharedPreferences("setting", Context.MODE_PRIVATE);
         res = pre.getInt(tag, 0);
         return res;
     }
@@ -37,7 +37,7 @@ public class SettingSharedPreference {
     public static void setDataString(Context c , String tag , int con)
     {
         SharedPreferences.Editor edi=
-                c.getSharedPreferences("setting", Context.MODE_WORLD_WRITEABLE).edit();
+                c.getSharedPreferences("setting", Context.MODE_PRIVATE).edit();
         edi.putInt(tag, con);
         edi.commit();
     }

@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.xyxl.tianyingn3.global.App;
+import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.ui.fragments.BaseFragment;
 import com.xyxl.tianyingn3.global.FinalDatas;
 
@@ -52,6 +53,16 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
         return screenWidth;
     }
 
+    public float getScreenDpi()
+    {
+        WindowManager manager = this.getWindowManager();
+
+        DisplayMetrics outMetrics = new DisplayMetrics();
+
+        manager.getDefaultDisplay().getMetrics(outMetrics);
+
+        return outMetrics.density;
+    }
 
     public int getScreenHeight() {
         //获取屏幕宽高

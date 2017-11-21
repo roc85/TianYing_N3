@@ -8,9 +8,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.xyxl.tianyingn3.R;
+import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bluetooth.BtSendDatas;
+import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.TestMsg;
+import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.solutions.BdSdk_v2_1;
 
 /**
@@ -43,6 +46,31 @@ public class NewMsgActivity extends BaseActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button3:
+                Message_DB msgDb = new Message_DB();
+                try
+                {
+                    msgDb.setRcvAddress(BdCardBean.FormatCardNum(editText.getText().toString()));
+                    msgDb.setRcvUserName(BdCardBean.FormatCardNum(editText.getText().toString()));
+                    msgDb.setSendAddress(BdCardBean.getInstance().getIdNum());
+                    msgDb.setSendUserName(BdCardBean.getInstance().getIdNum());
+                    msgDb.setMsgTime(System.currentTimeMillis());
+                    msgDb.setMsgType(0);
+                    msgDb.setMsgSendStatue(0);
+                    msgDb.setMsgCon(editText2.getText().toString());
+                    msgDb.setMsgPos("");
+                    msgDb.setRemark("");
+                    msgDb.setDelFlag(0);
+
+                    long _id = msgDb.save();
+                    BdCardBean.getInstance().setMsgSendingId(_id);
+                    LogUtil.i(_id+" saved");
+
+                }
+                catch(Exception e)
+                {
+                    LogUtil.e(e.toString());
+                }
+                AppBus.getInstance().post(msgDb);
                 AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA(editText.getText().toString(), 1, 2, editText2.getText().toString()), null));
                 break;
         }

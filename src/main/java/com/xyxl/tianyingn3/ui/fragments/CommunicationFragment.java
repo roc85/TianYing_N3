@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.logs.LogUtil;
+import com.xyxl.tianyingn3.ui.activities.ChatActivity;
 import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
 import com.xyxl.tianyingn3.ui.customview.TotalMsgAdapter;
 import com.xyxl.tianyingn3.util.CommonUtil;
@@ -42,7 +44,7 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
     private FloatingActionButton newMsg;
 
     //
-    private List<Message_DB> totalMsgDatas;
+    private List<Message_DB> totalMsgDatas = new ArrayList<Message_DB>();
     private TotalMsgAdapter totalMsgAdapter;
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -99,30 +101,52 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
         }
 
         totalMsgList.setAdapter(totalMsgAdapter);
+        totalMsgList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(),ChatActivity.class);
+                intent.putExtra("msg",totalMsgDatas.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     private void initData() {
         try
         {
-//            Message_DB msgDb = new Message_DB();
-//            msgDb.setMsgId(1);
-//            msgDb.setRcvAddress("");
-//            msgDb.setRcvUserName("22");
-//            msgDb.setMsgType(0);
-//            msgDb.setMsgCon("123");
-//            msgDb.setMsgTime(System.currentTimeMillis());
-//            msgDb.setSendUserName("11");
-//            msgDb.save();
-
             String myCardNum = BdCardBean.getInstance().getIdNum();
             if(TextUtils.isEmpty(myCardNum))
             {
-                myCardNum = "0306631";
+                myCardNum = "";
             }
-            totalMsgDatas = Message_DB.find(Message_DB.class,"send_Address = ? OR rcv_Address = ?",
+            else
+            {
+
+            }
+            List<Message_DB> msgDatas = Message_DB.find(Message_DB.class,"send_Address = ? OR rcv_Address = ?",
                     new String[]{myCardNum, myCardNum},
                     null,"msg_Time desc",null);
-//            totalMsgDatas = Message_DB.listAll(Message_DB.class);
+
+            List<String> nameList = new ArrayList<String>();
+            totalMsgDatas.clear();
+            for(int i=0;i<msgDatas.size();i++)
+            {
+                String name = "";
+                if(msgDatas.get(i).getMsgType() == 0)
+                {
+                    name = msgDatas.get(i).getRcvUserName();
+                }
+                else if(msgDatas.get(i).getMsgType() == 1)
+                {
+                    name = msgDatas.get(i).getSendUserName();
+                }
+
+                if(!nameList.contains(name))
+                {
+                    nameList.add(name);
+                    totalMsgDatas.add(msgDatas.get(i));
+                }
+            }
         }
         catch(Error e)
         {
@@ -131,6 +155,7 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
         }
 
         totalMsgAdapter = new TotalMsgAdapter(getActivity(),totalMsgDatas);
+        totalMsgAdapter.notifyDataSetChanged();
     }
 
 //    @Override
@@ -184,6 +209,16 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
 //        LogUtil.i("comm rcv");
 //        CommonUtil.ShowToast(getActivity(),"comm rcv" );
         totalMsgList.setAdapter(totalMsgAdapter);
+
+        if(totalMsgDatas.size() == 0)
+        {
+            tvNoMsg.setVisibility(View.VISIBLE);
+        }
+        else if(totalMsgDatas.size() > 0)
+        {
+            tvNoMsg.setVisibility(View.GONE);
+        }
+
         super.onResume();
     }
 
@@ -192,7 +227,30 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
         initData();
         LogUtil.i("comm rcv");
         CommonUtil.ShowToast(getActivity(),"comm rcv" );
+        if(totalMsgDatas.size() == 0)
+        {
+            tvNoMsg.setVisibility(View.VISIBLE);
+        }
+        else if(totalMsgDatas.size() > 0)
+        {
+            tvNoMsg.setVisibility(View.GONE);
+        }
         totalMsgList.setAdapter(totalMsgAdapter);
+    }
+
+    @Subscribe
+    public void setContent(BdCardBean data) {
+        initData();
+        totalMsgList.setAdapter(totalMsgAdapter);
+
+        if(totalMsgDatas.size() == 0)
+        {
+            tvNoMsg.setVisibility(View.VISIBLE);
+        }
+        else if(totalMsgDatas.size() > 0)
+        {
+            tvNoMsg.setVisibility(View.GONE);
+        }
     }
 
     @Override

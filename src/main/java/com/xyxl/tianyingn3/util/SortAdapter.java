@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,8 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
         View view = mInflater.inflate(R.layout.item_name, parent,false);
         ViewHolder viewHolder = new ViewHolder(view);
         viewHolder.tvName = (TextView) view.findViewById(R.id.tvName);
+        viewHolder.tvNum = (TextView) view.findViewById(R.id.tvNum);
+        viewHolder.lineBox = (LinearLayout) view.findViewById(R.id.itemBox);
         return viewHolder;
     }
 
@@ -42,6 +45,7 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     mOnItemClickListener.onItemClick(holder.itemView, position);
                 }
             });
@@ -49,14 +53,21 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
         }
 
         holder.tvName.setText(this.mData.get(position).getName());
+        holder.tvNum.setText(this.mData.get(position).getNum());
 
         holder.tvName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, mData.get(position).getName(),Toast.LENGTH_SHORT).show();
+
             }
         });
 
+        holder.lineBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, mData.get(position).getName(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -77,7 +88,8 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
     //**************************************************************
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName;
+        TextView tvName, tvNum;
+        LinearLayout lineBox;
 
         public ViewHolder(View itemView) {
             super(itemView);

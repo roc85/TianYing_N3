@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Introductions : 轨迹信息数据库
  */
 
-public class RouteInfoDB extends SugarRecord implements Serializable {
+public class RouteInfo_DB extends SugarRecord implements Serializable {
 //    @Column(name = "route_ID", unique = true)
 //    @Expose
 //    private long routeId; //轨迹id号

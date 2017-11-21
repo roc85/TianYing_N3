@@ -4,14 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bean.MessageBean;
 import com.xyxl.tianyingn3.bean.MyPosition;
+import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.global.TestMsg;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.util.CommonUtil;
 
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -277,6 +280,8 @@ public class BufferHandle {
             BdCardBean.getInstance().setCardLv(CommonUtil.Str2int(Str[6]));
             LogUtil.i(BdCardBean.getInstance().toString());
 
+
+
             return BdCardBean.getInstance();
         }
         //判断为波束信息
@@ -341,12 +346,43 @@ public class BufferHandle {
             //指令执行成功时
             if(Str[2].equals("Y"))
             {
-
+                if(Str[1].equals("TXA"))
+                {
+                    Message_DB msgTmp = null;
+                    try
+                    {
+                        msgTmp = Message_DB.findById(Message_DB.class,BdCardBean.getInstance().getMsgSendingId());
+                        msgTmp.setMsgSendStatue(1);
+                        msgTmp.save();
+                    }
+                    catch(Exception e)
+                    {
+                        LogUtil.e(e.toString());
+                    }
+                    BdCardBean.getInstance().setMsgSendingId(-1);
+                    return msgTmp;
+                }
             }
             else
             {
                 LogUtil.i("测试发送失败"+Str[1]+","+Str[5]+"秒后请重试");
+                if(Str[1].equals("TXA"))
+                {
+                    Message_DB msgTmp = null;
+                    try
+                    {
+                        msgTmp = Message_DB.findById(Message_DB.class,BdCardBean.getInstance().getMsgSendingId());
+                        msgTmp.setMsgSendStatue(2);
+                        msgTmp.save();
+                    }
+                    catch(Exception e)
+                    {
+                        LogUtil.e(e.toString());
+                    }
 
+                    BdCardBean.getInstance().setMsgSendingId(-1);
+                    return msgTmp;
+                }
             }
 
             return "测试发送反馈"+s;
