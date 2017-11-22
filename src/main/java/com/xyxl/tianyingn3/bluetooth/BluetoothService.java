@@ -215,7 +215,7 @@ public class BluetoothService extends Service implements FinalDatas{
                             cTmp.setContactName(getResources().getString(R.string.this_device));
                             cTmp.setBdNum(BdCardBean.getInstance().getIdNum());
                             long id = cTmp.save();
-                            LogUtil.i(id+"");
+//                            LogUtil.i(id+"");
                         }
                         else
                         {

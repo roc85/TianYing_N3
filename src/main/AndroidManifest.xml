@@ -109,6 +109,13 @@
             >
 
         </service>
+        <!-- 注册MainService -->
+        <service
+            android:name=".service.MainService"
+            class=".service.MainService"
+            >
+
+        </service>
 
         <activity android:name=".ui.activities.SplashActivity">
             <intent-filter>

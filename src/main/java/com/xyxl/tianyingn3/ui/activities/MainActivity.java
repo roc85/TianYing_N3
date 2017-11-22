@@ -27,6 +27,7 @@ import com.xyxl.tianyingn3.database.Msg_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.logs.LogUtil;
+import com.xyxl.tianyingn3.service.MainService;
 import com.xyxl.tianyingn3.solutions.BdSdk_v2_1;
 import com.xyxl.tianyingn3.ui.fragments.BaseFragment;
 import com.xyxl.tianyingn3.ui.fragments.HomeFragment;
@@ -134,6 +135,10 @@ public class MainActivity extends BaseActivity {
                 .add(R.id.fragmentsBox, settingFragment)
                 .hide(messageFragment).hide(mapFragment).hide(settingFragment).show(homeFragment).commit();
         currentTabIndex = 0;
+
+        //开启主服务
+        Intent mainIntent = new Intent(this, MainService.class);
+        startService(mainIntent);
 
         //开启蓝牙服务
         Intent gattServiceIntent = new Intent(this, BluetoothService.class);
@@ -284,8 +289,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         // TODO Auto-generated method stub
-//		mIntent=new Intent(MainActivity.this,MainService.class);
-//        stopService(mIntent);
+		Intent mIntent=new Intent(MainActivity.this,MainService.class);
+        stopService(mIntent);
+
         unbindService(mServiceConnection);
         super.onDestroy();
     }

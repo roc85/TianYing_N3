@@ -38,6 +38,7 @@ import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
+import com.xyxl.tianyingn3.ui.activities.SearchActivity;
 import com.xyxl.tianyingn3.ui.customview.ClearEditText;
 import com.xyxl.tianyingn3.ui.customview.CompassView;
 import com.xyxl.tianyingn3.ui.customview.HomeNoticeAdapter;
@@ -192,6 +193,13 @@ public class HomeFragment extends BaseFragment {
                 }
 
 
+            }
+        });
+
+        searchHomeEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getHoldingActivity().OpenActivity(false, SearchActivity.class);
             }
         });
 
