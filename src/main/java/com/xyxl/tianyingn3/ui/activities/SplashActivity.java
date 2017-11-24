@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.xyxl.tianyingn3.R;
@@ -62,6 +63,30 @@ public class SplashActivity extends BaseActivity {
         n.setNoticeAddress("");
         n.setNoticeCon("欢迎使用天应助手N3");
         n.save();
+
+        //初始化预制消息
+        String[] savedMsgs = {"你好","再见","请上报位置","集合","出发"};
+        for(int i=0;i<SAVED_MSG_MAX;i++)
+        {
+            if(TextUtils.isEmpty(SettingSharedPreference.getDataString(this,SAVED_MSG_INFO+i)))
+            {
+                SettingSharedPreference.setDataString(this,SAVED_MSG_INFO+i,savedMsgs[i]);
+            }
+        }
+
+        //初始化快捷按钮
+        String homeBtns = SettingSharedPreference.getDataString(this,HOME_BTNS_FLAG);
+
+        if(TextUtils.isEmpty(homeBtns))
+        {
+            homeBtns = "";
+            for(int i=0;i<HOME_BTNS_INFOS.length;i++)
+            {
+                homeBtns += HOME_BTNS_INFOS[i]+"f"+1+"g";
+            }
+            SettingSharedPreference.setDataString(this,HOME_BTNS_FLAG,homeBtns);
+        }
+
     }
 
     //创建一个handler，内部完成处理消息方法

@@ -108,6 +108,9 @@
     <string name="new_msg_title">消息提醒</string>
     <string name="new_msg_notice">有新的消息</string>
 
+    <!--首页快捷按钮相关-->
+    <string name="btn_home_set_title">快捷按钮设置</string>
+
     <!--联系人布局相关-->
     <array name="waveSideBarLetters">
         <item>\u0023</item>

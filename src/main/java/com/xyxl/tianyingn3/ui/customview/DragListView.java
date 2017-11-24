@@ -194,11 +194,12 @@ public class DragListView extends ListView {
         //数据交换
         if(dragPosition>0&&dragPosition<getAdapter().getCount()){
             @SuppressWarnings("unchecked")
-            GroupFragment.DragListAdapter adapter = (GroupFragment.DragListAdapter)getAdapter();
+            DragListAdapter adapter = (DragListAdapter)getAdapter();
             String dragItem = adapter.getItem(dragSrcPosition);
             adapter.remove(dragItem);
             adapter.insert(dragItem, dragPosition);
-            Toast.makeText(getContext(), adapter.getList().toString(), Toast.LENGTH_SHORT).show();
+//            adapter.ExchangeFlagInt(dragSrcPosition, dragPosition);
+//            Toast.makeText(getContext(), adapter.getList().toString(), Toast.LENGTH_SHORT).show();
         }
 
     }

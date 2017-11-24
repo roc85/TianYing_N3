@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.ui.activities.BaseActivity;
 
 /**
@@ -14,7 +15,7 @@ import com.xyxl.tianyingn3.ui.activities.BaseActivity;
  * Function：
  */
 
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment implements FinalDatas{
 
     protected BaseActivity mActivity;
 

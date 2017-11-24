@@ -42,17 +42,23 @@ import com.xyxl.tianyingn3.bean.MyPosition;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
+import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.solutions.GpsData;
+import com.xyxl.tianyingn3.ui.activities.BluetoothActivity;
 import com.xyxl.tianyingn3.ui.activities.ChatActivity;
+import com.xyxl.tianyingn3.ui.activities.NewContactActivity;
 import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
 import com.xyxl.tianyingn3.ui.activities.SearchActivity;
+import com.xyxl.tianyingn3.ui.activities.SetHomeBtnActivity;
 import com.xyxl.tianyingn3.ui.customview.ClearEditText;
 import com.xyxl.tianyingn3.ui.customview.CompassView;
+import com.xyxl.tianyingn3.ui.customview.DragListAdapter;
 import com.xyxl.tianyingn3.ui.customview.HomeNoticeAdapter;
 import com.xyxl.tianyingn3.util.CommonUtil;
 import com.xyxl.tianyingn3.util.DataUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -314,41 +320,85 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void RefreshBtnBox() {
-        Button btn = new Button(getHoldingActivity());
-        btn.setText("SOS");
-        btnBox.addView(btn);
+        btnBox.removeAllViews();
+        String homeBtns = SettingSharedPreference.getDataString(getHoldingActivity(),HOME_BTNS_FLAG);
 
-        Button btn1 = new Button(getHoldingActivity());
-        btn1.setText("SOS");
-        btnBox.addView(btn1);
+        if(TextUtils.isEmpty(homeBtns))
+        {
+            homeBtns = "";
+            for(int i=0;i<HOME_BTNS_INFOS.length;i++)
+            {
+                homeBtns += HOME_BTNS_INFOS[i]+"f"+1+"g";
+            }
+        }
 
-        Button btn2 = new Button(getHoldingActivity());
-        btn2.setText("SOS");
-        btnBox.addView(btn2);
+        try {
+            String[] homePerBtn = homeBtns.split("g");
+            List<Integer> flags = new ArrayList<Integer>();
+            for (int i = 0; i < homeBtns.length(); i++) {
+                String[] tmp = homePerBtn[i].split("f");
+                if (tmp[1].equals("1")) {
+                    Button btn = new Button(getHoldingActivity());
+                    btn.setText(tmp[0]);
+                    btn.setTag(tmp[0]);
+                    btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            BtnOpenActivity((String)v.getTag());
+//                            getHoldingActivity().OpenActivity(false, SetHomeBtnActivity.class);
+                        }
 
-        Button btn3 = new Button(getHoldingActivity());
-        btn3.setText("SOS");
-        btnBox.addView(btn3);
 
-        Button btn4 = new Button(getHoldingActivity());
-        btn4.setText("SOS");
-        btnBox.addView(btn4);
+                    });
+                    btnBox.addView(btn);
+                }
+            }
 
-        Button btn5 = new Button(getHoldingActivity());
-        btn5.setText("SOS");
-        btnBox.addView(btn5);
+        } catch (Exception e) {
 
-        Button  btnNew = new Button(getHoldingActivity());
-        btnNew.setText("新报文S");
+        }
+
+        Button btnNew = new Button(getHoldingActivity());
+        btnNew.setText("设置");
+        btnBox.addView(btnNew);
         btnNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getHoldingActivity().OpenActivity(false, NewMsgActivity.class);
+                getHoldingActivity().OpenActivity(false, SetHomeBtnActivity.class);
             }
         });
-        btnBox.addView(btnNew);
-    }
 
+    }
+    private void BtnOpenActivity(String tag) {
+        if(tag.equals(HOME_BTNS_INFOS[0]))
+        {
+            if(BtConnectInfo.getInstance().isConnect() || !TextUtils.isEmpty(BdCardBean.getInstance().getIdNum()))
+            {
+                getHoldingActivity().OpenActivity(false, NewMsgActivity.class);
+            }
+            else
+            {
+                getHoldingActivity().ShowToast(getResources().getString(R.string.cant_send_msg));
+            }
+
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[1]))
+        {
+            getHoldingActivity().OpenActivity(false, NewContactActivity.class);
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[2]))
+        {
+            getHoldingActivity().OpenActivity(false, BluetoothActivity.class);
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[3]))
+        {
+//            getHoldingActivity().OpenActivity(false, NewContactActivity.class);
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[4]))
+        {
+//            getHoldingActivity().OpenActivity(false, BluetoothActivity.class);
+        }
+    }
 
     private boolean GetBoxHeight()
     {
@@ -425,6 +475,9 @@ public class HomeFragment extends BaseFragment {
         }
         mStopDrawing = false;
         mHandler.postDelayed(mCompassViewUpdater, 20);
+
+        RefreshBtnBox();
+        RefreshUI();
     }
 
     @Override

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.global.FinalDatas;
+import com.xyxl.tianyingn3.ui.customview.DragListAdapter;
 import com.xyxl.tianyingn3.ui.customview.DragListView;
 
 import java.util.ArrayList;
@@ -97,43 +98,43 @@ public class GroupFragment extends Fragment implements FinalDatas {
     }
 
 
-    public static class DragListAdapter extends ArrayAdapter<String> {
-
-        public DragListAdapter(Context context, List<String> objects) {
-            super(context, 0, objects);
-        }
-
-        public List<String> getList(){
-            return list;
-        }
-
-        @Override
-        public boolean isEnabled(int position) {
-            if(groupKey.contains(getItem(position))){
-                //如果是分组标签，返回false，不能选中，不能点击
-                return false;
-            }
-            return super.isEnabled(position);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            View view = convertView;
-            if(groupKey.contains(getItem(position))){
-                //如果是分组标签，就加载分组标签的布局文件，两个布局文件显示效果不同
-                view = LayoutInflater.from(getContext()).inflate(R.layout.drag_list_item_tag, null);
-            }else{
-                //如果是正常数据项标签，就加在正常数据项的布局文件
-                view = LayoutInflater.from(getContext()).inflate(R.layout.drag_list_item, null);
-            }
-
-            TextView textView = (TextView)view.findViewById(R.id.drag_list_item_text);
-            textView.setText(getItem(position));
-
-            return view;
-        }
-    }
+//    public static class DragListAdapter extends ArrayAdapter<String> {
+//
+//        public DragListAdapter(Context context, List<String> objects) {
+//            super(context, 0, objects);
+//        }
+//
+//        public List<String> getList(){
+//            return list;
+//        }
+//
+//        @Override
+//        public boolean isEnabled(int position) {
+//            if(groupKey.contains(getItem(position))){
+//                //如果是分组标签，返回false，不能选中，不能点击
+//                return false;
+//            }
+//            return super.isEnabled(position);
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//
+//            View view = convertView;
+//            if(groupKey.contains(getItem(position))){
+//                //如果是分组标签，就加载分组标签的布局文件，两个布局文件显示效果不同
+//                view = LayoutInflater.from(getContext()).inflate(R.layout.drag_list_item_tag, null);
+//            }else{
+//                //如果是正常数据项标签，就加在正常数据项的布局文件
+//                view = LayoutInflater.from(getContext()).inflate(R.layout.drag_list_item, null);
+//            }
+//
+//            TextView textView = (TextView)view.findViewById(R.id.drag_list_item_text);
+//            textView.setText(getItem(position));
+//
+//            return view;
+//        }
+//    }
 
     @Override
     public void onDestroy() {

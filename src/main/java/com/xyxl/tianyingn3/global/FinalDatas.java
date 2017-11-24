@@ -22,7 +22,20 @@ public interface FinalDatas {
     public static final String SAVED_MSG_INFO = "saveMsgInfo";
     //预制消息最大数目
     public static final int SAVED_MSG_MAX = 5;
+
+    //振动提醒开关
+    public static final String VIBRATION_FLAG = "vibration_flag";
+    //铃声提醒开关
+    public static final String RING_FLAG = "ring_flag";
+    //通知栏提醒开关
+    public static final String NOTICE_BAR_FLAG = "notice_bar_flag";
+    //定位方式参数
+    public static final String LOCATION_TYPE_FLAG = "location_type_flag";
     /********************************************************************/
     //蓝牙默认连接失败最大次数
     public static final int BT_AUTO_CONNECT_MAX_TIME = 5;
+
+    //快捷功能
+    public static final String[] HOME_BTNS_INFOS = {"新建报文", "新建联系人", "设备管理", "提醒设置", "快捷登录"};
+    public static final String HOME_BTNS_FLAG = "homeBtnsFlag";
 }

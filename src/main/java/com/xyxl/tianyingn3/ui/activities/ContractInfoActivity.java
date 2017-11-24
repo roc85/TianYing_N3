@@ -19,8 +19,10 @@ import com.squareup.picasso.Transformation;
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.database.Contact_DB;
+import com.xyxl.tianyingn3.database.Message_DB;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/11/13 16:46
@@ -129,8 +131,39 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
             case R.id.buttonDel:
 
                 Contact_DB tmp = Contact_DB.findById(Contact_DB.class,_id);
+
                 if(tmp!=null && tmp.delete())
                 {
+                    final String bdCard = tmp.getBdNum();
+                    //更新所以消息列表
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            List<Message_DB> msgList = Message_DB.find(Message_DB.class,"send_Address = ? OR rcv_Address = ?",
+                                    new String[]{bdCard, bdCard},
+                                    null,"msg_Time desc",null);
+                            if(msgList.size()>0)
+                            {
+                                for(int i=0;i<msgList.size();i++)
+                                {
+                                    Message_DB msg = msgList.get(i);
+                                    if(msg.getRcvAddress().equals(bdCard))
+                                    {
+                                        msg.setRcvUserId(-1);
+                                        msg.setRcvUserName(bdCard);
+                                    }
+
+                                    if(msg.getSendAddress().equals(bdCard))
+                                    {
+                                        msg.setSendUserId(-1);
+                                        msg.setSendUserName(bdCard);
+                                    }
+                                    msg.save();
+                                }
+
+                            }
+                        }
+                    }).start();
                     finish();
                 }
 

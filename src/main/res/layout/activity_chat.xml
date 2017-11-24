@@ -79,11 +79,19 @@
 
 
             <ImageView
-                android:id="@+id/imageAddInput"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/imageSendType"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                app:srcCompat="@android:drawable/ic_dialog_dialer" />
+
+            <ImageView
+                android:id="@+id/imageAddInput"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/imageSendType"
                 app:srcCompat="@android:drawable/ic_input_add" />
 
             <Button
@@ -107,6 +115,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_toLeftOf="@id/btnSend"
                 android:layout_toRightOf="@id/imageAddInput"
+                android:imeOptions="actionSend"
                 android:ems="10"
                 android:inputType="text"
                 android:text=""

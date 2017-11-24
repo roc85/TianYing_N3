@@ -1,5 +1,6 @@
 package com.xyxl.tianyingn3.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,7 +13,10 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -37,15 +41,19 @@ import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
+import com.xyxl.tianyingn3.global.FinalDatas;
+import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.solutions.BdSdk_v2_1;
 import com.xyxl.tianyingn3.solutions.GpsData;
 import com.xyxl.tianyingn3.ui.customview.ChatAdapter;
+import com.xyxl.tianyingn3.ui.customview.DialogView;
 import com.xyxl.tianyingn3.util.DataUtil;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,12 +61,13 @@ import java.util.List;
  * Version : V1.0
  * Introductions : 具体消息页面
  */
-public class ChatActivity extends BaseActivity implements View.OnClickListener {
+public class ChatActivity extends BaseActivity implements View.OnClickListener ,FinalDatas{
 
     private Message_DB thisMsg;
     private ImageView imageInfo;
     private ImageView imageBack;
     private ImageView imageHead;
+    private ImageView imageSendType;
     private TextView textUserName;
     private TextView textAddInfo;
     private LinearLayout userInfos;
@@ -78,6 +87,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     private Contact_DB thisContact;
     private List<Message_DB> chatDatas;
     private ChatAdapter chatAdapter;
+
+    private List<String> msgSavedList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,12 +126,23 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
             LogUtil.e(e.toString());
             finish();
         }
+
+        msgSavedList.clear();
+        for(int i = 0;i<SAVED_MSG_MAX;i++)
+        {
+            if(!TextUtils.isEmpty(SettingSharedPreference.getDataString(this,SAVED_MSG_INFO+i)))
+            {
+                msgSavedList.add(SettingSharedPreference.getDataString(this,SAVED_MSG_INFO+i));
+            }
+        }
+
     }
 
     private void initView() {
         imageInfo = (ImageView) findViewById(R.id.imageInfo);
         imageBack = (ImageView) findViewById(R.id.imageBack);
         imageHead = (ImageView) findViewById(R.id.imageHead);
+        imageSendType = (ImageView) findViewById(R.id.imageSendType);
         textUserName = (TextView) findViewById(R.id.textUserName);
         textAddInfo = (TextView) findViewById(R.id.textAddInfo);
         userInfos = (LinearLayout) findViewById(R.id.userInfos);
@@ -165,6 +187,12 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
                     transform(transformation).
                     placeholder(R.mipmap.ic_launcher_round).
                     into(imageHead);
+        }
+
+        //设置发送模式按钮
+        if(thisContact == null || TextUtils.isEmpty(thisContact.getBdNum()) || TextUtils.isEmpty(thisContact.getPhone()))
+        {
+            imageSendType.setVisibility(View.GONE);
         }
 
         //位置选择
@@ -230,6 +258,38 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
             public void afterTextChanged(Editable s) {
             }
         });
+
+        //软键盘发送
+        editInput.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+					 /*隐藏软键盘*/
+                    InputMethodManager imm = (InputMethodManager) v
+                            .getContext().getSystemService(
+                                    Context.INPUT_METHOD_SERVICE);
+                    if (imm.isActive()) {
+                        imm.hideSoftInputFromWindow(
+                                v.getApplicationWindowToken(), 0);
+                    }
+
+                    SendMsg();
+                }
+
+                return false;
+            }
+        });
+
+        //输入框长按
+        editInput.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                DialogView.ShowCHooseDialog(ChatActivity.this,msgSavedList,mHandler);
+                return false;
+            }
+        });
+
     }
 
     Transformation transformation = new Transformation() {
@@ -272,6 +332,24 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         msgLists.setAdapter(chatAdapter);
         scrollMyListViewToBottom();
 //        msgLists.scrollTo(msgLists.getScrollX(),msgLists.getHeight());
+
+        //更新联系人
+        thisContact = Contact_DB.findById(Contact_DB.class,Contact_DB.getIdViaAddress(userBdNum));
+        textUserName.setText(userName);
+
+        if(thisContact != null)
+        {
+            Picasso.with(this).load(new File(thisContact.getHead())).
+                    transform(transformation).
+                    placeholder(R.mipmap.ic_launcher_round).
+                    into(imageHead);
+        }
+
+        //设置发送模式按钮
+        if(thisContact == null || TextUtils.isEmpty(thisContact.getBdNum()) || TextUtils.isEmpty(thisContact.getPhone()))
+        {
+            imageSendType.setVisibility(View.GONE);
+        }
     }
 
     //listview到底部
@@ -291,6 +369,10 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
             switch (msg.what) {
                 case 1: // Notify change
                     RefreshUI();
+                    break;
+
+                case 1001:
+                    editInput.append(msgSavedList.get(msg.arg1));
                     break;
             }
         }
