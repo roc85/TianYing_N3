@@ -23,6 +23,8 @@ import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.solutions.BufferHandle;
 import com.xyxl.tianyingn3.util.CommonUtil;
+import com.xyxl.tianyingn3.util.DeviceUtil;
+import com.xyxl.tianyingn3.util.ImageUtil;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -59,6 +61,10 @@ public class App extends Application{
 
         //初始化百度地图
         SDKInitializer.initialize(this);
+
+        //创建app缓存目录
+        DeviceUtil.createAPPFolder(getResources().getString(R.string.app_name_en),this);
+        ImageUtil.createImageFileInCameraFolder(getResources().getString(R.string.app_name_en),this);
 
         //初始化数据缓冲区分析方法BufferHandle
         BufferHandle.getInstance().setContext(getApplicationContext());

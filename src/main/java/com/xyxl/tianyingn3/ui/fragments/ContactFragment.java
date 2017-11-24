@@ -12,25 +12,23 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.otto.Subscribe;
 import com.xyxl.tianyingn3.R;
-import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
-import com.xyxl.tianyingn3.ui.activities.MainActivity;
+import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.ui.activities.NewContactActivity;
 import com.xyxl.tianyingn3.ui.customview.ClearEditText;
 import com.xyxl.tianyingn3.ui.customview.WaveSideBar;
 import com.xyxl.tianyingn3.util.PinyinComparator;
 import com.xyxl.tianyingn3.util.PinyinUtils;
-import com.xyxl.tianyingn3.util.SortAdapter;
-import com.xyxl.tianyingn3.util.SortModel;
+import com.xyxl.tianyingn3.ui.customview.SortAdapter;
+import com.xyxl.tianyingn3.bean.SortModel;
 import com.xyxl.tianyingn3.util.TitleItemDecoration;
 
 import java.util.ArrayList;
@@ -177,6 +175,10 @@ public class ContactFragment extends Fragment implements FinalDatas {
             SortModel sortModel = new SortModel();
             sortModel.setName(list.get(i).getContactName());
             sortModel.setNum(list.get(i).getBdNum());
+            sortModel.setHeadFile(list.get(i).getHead());
+            sortModel.set_id(list.get(i).getId());
+            LogUtil.i(sortModel.get_id()+"-ID_CONTACT");
+
             //汉字转换成拼音
             String pinyin = PinyinUtils.getPingYin(list.get(i).getContactName());
             String sortString = pinyin.substring(0, 1).toUpperCase();
@@ -286,7 +288,9 @@ public class ContactFragment extends Fragment implements FinalDatas {
     public void onStart() {
         super.onStart();
         //注册到bus事件总线中
+
         AppBus.getInstance().register(this);
+
     }
 
     @Override

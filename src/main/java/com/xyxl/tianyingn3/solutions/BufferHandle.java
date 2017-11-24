@@ -3,6 +3,7 @@ package com.xyxl.tianyingn3.solutions;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
@@ -10,9 +11,13 @@ import com.xyxl.tianyingn3.bean.MessageBean;
 import com.xyxl.tianyingn3.bean.MyPosition;
 import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
+import com.xyxl.tianyingn3.database.PosInfo_DB;
+import com.xyxl.tianyingn3.global.FinalDatas;
+import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.global.TestMsg;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.util.CommonUtil;
+import com.xyxl.tianyingn3.util.DataUtil;
 
 import java.sql.Savepoint;
 import java.util.ArrayList;
@@ -23,7 +28,7 @@ import java.util.List;
  * Function：用于保存收到的数据并进行分析处理,单例
  */
 
-public class BufferHandle {
+public class BufferHandle implements FinalDatas{
 
     private Context mContext;
 
@@ -276,6 +281,7 @@ public class BufferHandle {
 
             //向全局变量添加IC信息
             BdCardBean.getInstance().setIdNum(BdCardBean.FormatCardNum(Str[1]));
+            SettingSharedPreference.setDataString(mContext,LAST_BD_CARD_NUM,BdCardBean.FormatCardNum(Str[1]));
             BdCardBean.getInstance().setServiceFrequency(CommonUtil.Str2int(Str[5]));
             BdCardBean.getInstance().setCardLv(CommonUtil.Str2int(Str[6]));
             LogUtil.i(BdCardBean.getInstance().toString());
@@ -401,6 +407,7 @@ public class BufferHandle {
         {
             LogUtil.i("测试接收");
             Str=BdSdk_v2_1.BD_ReceiveTXR(s);
+
             if(Str[4]==null||Str[4].length()<2)
             {
                 //保存毫秒时间数据
@@ -408,7 +415,7 @@ public class BufferHandle {
             }
 
             //测试用
-            TestMsg.getInstance().AddRcvNum();
+//            TestMsg.getInstance().AddRcvNum();
 //            MessageBean messageBean = new MessageBean();
 //            messageBean.setSendAddress(BdCardBean.getInstance().getIdNum());
 //            messageBean.setMsgCon(Str[5]);
@@ -417,14 +424,55 @@ public class BufferHandle {
             try
             {
                 msgDb.setRcvAddress(BdCardBean.getInstance().getIdNum());
-                msgDb.setRcvUserName(BdCardBean.getInstance().getIdNum());
+                msgDb.setRcvUserId(Contact_DB.getIdViaAddress(msgDb.getRcvAddress()));
+                msgDb.setRcvUserName(Contact_DB.getNameViaId(msgDb.getRcvUserId(),msgDb.getRcvAddress()));
+
                 msgDb.setSendAddress(Str[2]);
-                msgDb.setSendUserName(Str[2]);
+                msgDb.setSendUserId(Contact_DB.getIdViaAddress(msgDb.getSendAddress()));
+                msgDb.setSendUserName(Contact_DB.getNameViaId(msgDb.getSendUserId(),msgDb.getSendAddress()));
+
                 msgDb.setMsgTime(System.currentTimeMillis());
                 msgDb.setMsgType(1);
                 msgDb.setMsgSendStatue(1);
-                msgDb.setMsgCon(Str[5]);
-                msgDb.setMsgPos("");
+                if(Str[3].equals("2"))
+                {
+                    //混发
+                    msgDb.setMsgCon(Str[5]);
+                    msgDb.setMsgPos("");
+                }
+                else if(Str[3].equals("1"))
+                {
+                    //代码
+                    String pos = Str[5].substring(0,16);
+
+                    PosInfo_DB p = new PosInfo_DB();
+                    p.setAltitude(0);
+                    p.setDirection(0);
+                    p.setLat(GpsData.GetPosDisplayDouble(DataUtil.hexStr2Bytes(pos.substring(8,16))));
+                    p.setLon(GpsData.GetPosDisplayDouble(DataUtil.hexStr2Bytes(pos.substring(0,8))));
+                    p.setSpeed(0);
+                    p.setTime(msgDb.getMsgTime());
+                    p.setUserName(msgDb.getSendUserName());
+                    p.setUserNum(msgDb.getSendAddress());
+                    p.setUserId(msgDb.getSendUserId());
+                    p.setRemark("");
+                    p.setOwner("");
+
+                    p.save();
+
+                    try
+                    {
+                        String con = new String(DataUtil.hexStr2Bytes(Str[5].substring(16,Str[5].length())),"GB2312");
+                        msgDb.setMsgCon(con);
+                    }
+                    catch(Exception e)
+                    {
+                        msgDb.setMsgCon(e.toString());
+                    }
+
+                    msgDb.setMsgPos(pos);
+                }
+
                 msgDb.setRemark("");
                 msgDb.setDelFlag(0);
 

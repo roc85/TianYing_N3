@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/tmHead"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         app:srcCompat="@mipmap/ic_launcher_round" />

@@ -1,5 +1,8 @@
 package com.xyxl.tianyingn3.bluetooth;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -17,6 +20,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -39,6 +43,7 @@ import com.xyxl.tianyingn3.service.MainService;
 import com.xyxl.tianyingn3.solutions.BdSdk_v2_1;
 import com.xyxl.tianyingn3.solutions.BufferHandle;
 import com.xyxl.tianyingn3.ui.activities.MainActivity;
+import com.xyxl.tianyingn3.util.NotificationBroadcastReceiver;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -75,12 +80,18 @@ public class BluetoothService extends Service implements FinalDatas{
 
     private DataAnalyseThread dataAnalyseThread;
 
+    //通知栏相关
+    private NotificationCompat.Builder mBuilder;
+    private int     				   notifyId;
+    public NotificationManager mNotificationManager;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         //注册到bus事件总线中
         AppBus.getInstance().register(this);
         LogUtil.i(getResources().getString(R.string.ble_service_bind));
+
 
         //自动连接
         if(initialize() && !TextUtils.isEmpty(SettingSharedPreference.getDataString(this,BT_DEVICE_MAC)))
@@ -95,9 +106,71 @@ public class BluetoothService extends Service implements FinalDatas{
         dataAnalyseThread.isRunning = true;
         dataAnalyseThread.start();
 
+        //初始化通知栏
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        mBuilder = new NotificationCompat.Builder(this);
+
+        mBuilder.setAutoCancel(true);
+        mBuilder.setContentTitle("测试标题")
+                .setContentText("测试内容")
+//				.setContentIntent(getDefalutIntent(Notification.FLAG_AUTO_CANCEL))
+//				.setNumber(number)//显示数量
+
+                .setTicker("测试通知来啦")//通知首次出现在通知栏，带上升动画效果的
+                .setWhen(System.currentTimeMillis())//通知产生的时间，会在通知信息里显示
+                .setPriority(Notification.PRIORITY_DEFAULT)//设置该通知优先级
+//				.setAutoCancel(true)//设置这个标志当用户单击面板就可以让通知将自动取消
+                .setOngoing(false)//ture，设置他为一个正在进行的通知。他们通常是用来表示一个后台任务,用户积极参与(如播放音乐)或以某种方式正在等待,因此占用设备(如一个文件下载,同步操作,主动网络连接)
+                .setDefaults(Notification.DEFAULT_VIBRATE)//向通知添加声音、闪灯和振动效果的最简单、最一致的方式是使用当前的用户默认设置，使用defaults属性，可以组合：
+                //Notification.DEFAULT_ALL  Notification.DEFAULT_SOUND 添加声音 // requires VIBRATE permission
+                .setSmallIcon(R.mipmap.ic_launcher);
+
         return null;
     }
 
+    public void ShowNotice(String str , long _Id)
+    {
+        //通知栏显示
+//        if(SettingSharedPreference.getNotic(mContext)==0)
+//        {
+//            try {
+//                notifyId = Integer.valueOf(bdId);
+//            } catch (Exception e) {
+//                // TODO: handle exception
+//                notifyId = 100;
+
+        notifyId = (int) _Id;
+        mNotificationManager.cancel(notifyId);
+
+        mBuilder.setContentTitle(getResources().getString(R.string.new_msg_title))
+                .setContentText(str)
+                .setTicker(getResources().getString(R.string.new_msg_notice));//通知首次出现在通知栏，带上升动画效果的
+
+        mNotificationManager.notify(notifyId, mBuilder.build());
+
+        //新的通知
+        Intent intentClick = new Intent(getApplicationContext(), NotificationBroadcastReceiver.class);
+        intentClick.setAction("notification_clicked");
+        intentClick.putExtra("msg_id", _Id);
+        intentClick.putExtra("notice_type", 0);
+        intentClick.putExtra(NotificationBroadcastReceiver.TYPE, 1);
+        PendingIntent pendingIntentClick = PendingIntent.getBroadcast(getApplicationContext(), 0, intentClick, PendingIntent.FLAG_ONE_SHOT);
+
+        Intent intentCancel = new Intent(getApplicationContext(), NotificationBroadcastReceiver.class);
+        intentCancel.setAction("notification_cancelled");
+        intentCancel.putExtra(NotificationBroadcastReceiver.TYPE, 2);
+        PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(getApplicationContext(), 0, intentCancel, PendingIntent.FLAG_ONE_SHOT);
+
+        mBuilder.setContentTitle(getResources().getString(R.string.new_msg_title))
+                .setContentText(str)
+                .setTicker(getResources().getString(R.string.new_msg_notice))
+                .setContentIntent(pendingIntentClick)
+                .setDeleteIntent(pendingIntentCancel);//通知首次出现在通知栏，带上升动画效果的
+
+        mNotificationManager.notify(notifyId, mBuilder.build());
+//        }
+    }
     @Override
     public boolean onUnbind(Intent intent) {
         // TODO Auto-generated method stub
@@ -191,11 +264,12 @@ public class BluetoothService extends Service implements FinalDatas{
                                 Notice_DB n = new Notice_DB();
                                 n.setNoticeType(0);
                                 n.setNoticeTime(mTmp.getMsgTime());
-                                n.setNoticeRemark("");
+                                n.setNoticeRemark(mTmp.getId()+"");
                                 n.setNoticeNum(mTmp.getId()+"");
                                 n.setNoticeAddress(mTmp.getRcvAddress());
                                 n.setNoticeCon("收到来自【"+mTmp.getSendUserName()+"】的北斗报文");
                                 n.save();
+                                ShowNotice(n.getNoticeCon(),mTmp.getId());
                                 AppBus.getInstance().post(n);
                             }
 
@@ -208,23 +282,25 @@ public class BluetoothService extends Service implements FinalDatas{
                     }
                     else if(msg.obj instanceof BdCardBean)
                     {
-                        List<Contact_DB> cList = Contact_DB.find(Contact_DB.class,"contact_Name = ?",getResources().getString(R.string.this_device));
-                        if(cList.size() > 0)
-                        {
-                            Contact_DB cTmp = cList.get(0);
-                            cTmp.setContactName(getResources().getString(R.string.this_device));
-                            cTmp.setBdNum(BdCardBean.getInstance().getIdNum());
-                            long id = cTmp.save();
-//                            LogUtil.i(id+"");
-                        }
-                        else
-                        {
-                            Contact_DB cTmp = new Contact_DB();
-                            cTmp.setContactName(getResources().getString(R.string.this_device));
-                            cTmp.setBdNum(BdCardBean.getInstance().getIdNum());
-                            long id = cTmp.save();
-                            LogUtil.i(id+"");
-                        }
+//                        List<Contact_DB> cList = Contact_DB.find(Contact_DB.class,"contact_Name = ?",getResources().getString(R.string.this_device));
+//                        if(cList.size() > 0)
+//                        {
+//                            Contact_DB cTmp = cList.get(0);
+//                            cTmp.setContactName(getResources().getString(R.string.this_device));
+//                            cTmp.setBdNum(BdCardBean.getInstance().getIdNum());
+//                            long id = cTmp.save();
+//                            AppBus.getInstance().post(cTmp);
+////                            LogUtil.i(id+"");
+//                        }
+//                        else
+//                        {
+//                            Contact_DB cTmp = new Contact_DB();
+//                            cTmp.setContactName(getResources().getString(R.string.this_device));
+//                            cTmp.setBdNum(BdCardBean.getInstance().getIdNum());
+//                            long id = cTmp.save();
+//                            AppBus.getInstance().post(cTmp);
+////                            LogUtil.i(id+"");
+//                        }
                     }
                     break;
                 case 2: // Notify change
@@ -261,7 +337,7 @@ public class BluetoothService extends Service implements FinalDatas{
             {
                 if(BtConnectInfo.getInstance().isConnect())
                 {
-                    if(TextUtils.isEmpty(BdCardBean.getInstance().getIdNum()))
+                    if(BdCardBean.getInstance().getCardLv()<=0)
                     {
                         sendmessage(BdSdk_v2_1.BD_SendICA(0,0));
                     }
@@ -377,7 +453,7 @@ public class BluetoothService extends Service implements FinalDatas{
     public void close()
     {
         BtConnectInfo.getInstance().setConnect(false);
-        BdCardBean.getInstance().setIdNum("");
+        BdCardBean.getInstance().setCardLv(0);
         mHandler.sendEmptyMessage(100);
         if (mBluetoothGatt == null)
         {
@@ -459,7 +535,7 @@ public class BluetoothService extends Service implements FinalDatas{
 //                    mBufferHandle.ClearBdData(0);
 //                    globalData.setDataSourceInputType(0);
                     BtConnectInfo.getInstance().setConnect(false);
-                    BdCardBean.getInstance().setIdNum("");
+                    BdCardBean.getInstance().setCardLv(0);
                     mHandler.sendEmptyMessage(100);
                     mBluetoothGatt.close();
                     mBluetoothGatt = null;
@@ -469,7 +545,7 @@ public class BluetoothService extends Service implements FinalDatas{
             else
             {
                 BtConnectInfo.getInstance().setConnect(false);
-                BdCardBean.getInstance().setIdNum("");
+                BdCardBean.getInstance().setCardLv(0);
                 mHandler.sendEmptyMessage(100);
 
             }
@@ -558,7 +634,11 @@ public class BluetoothService extends Service implements FinalDatas{
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt,
                                           BluetoothGattCharacteristic characteristic, int status) {
-            LogUtil.i("OnCharacteristicWrite");
+            LogUtil.i("OnCharacteristicWrite"+status);
+            if (status != BluetoothGatt.GATT_SUCCESS)
+            {
+                Toast.makeText(BluetoothService.this, "发送失败"+status, Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override

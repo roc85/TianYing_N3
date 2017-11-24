@@ -1,10 +1,16 @@
 package com.xyxl.tianyingn3.database;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.Expose;
 import com.orm.SugarRecord;
 import com.orm.dsl.Column;
+import com.xyxl.tianyingn3.bean.BdCardBean;
+
+import org.w3c.dom.Text;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by rocgoo on 2017/11/9 下午1:45.
@@ -110,5 +116,100 @@ public class Contact_DB extends SugarRecord implements Serializable{
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    /***************************************************************************************************/
+
+    /**
+     * Gets id via address.
+     *
+     * @param num the num
+     * @return the id via address
+     */
+    public static long getIdViaAddress(String num)
+    {
+        num = BdCardBean.FormatCardNum(num);
+        List<Contact_DB> tmpList = Contact_DB.find(Contact_DB.class,"bd_Num = ?",num);
+        if(tmpList.size()>0)
+        {
+            return tmpList.get(0).getId();
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+
+    /**
+     * Gets id via name.
+     *
+     * @param name the name
+     * @return the id via name
+     */
+    public static long getIdViaName(String name)
+    {
+        List<Contact_DB> tmpList = Contact_DB.find(Contact_DB.class,"contact_Name = ?",name);
+        if(tmpList.size()>0)
+        {
+            return tmpList.get(0).getId();
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+
+    /**
+     * Gets name via id.
+     *
+     * @param _id         the id
+     * @param defaultName the default name
+     * @return the name via id
+     */
+    public static String getNameViaId(long _id, String defaultName) {
+        if (_id < 0) {
+            return defaultName;
+        } else {
+            try {
+                Contact_DB tmp = Contact_DB.findById(Contact_DB.class, _id);
+                if (tmp == null) {
+                    return defaultName;
+                } else {
+                    return tmp.getContactName();
+                }
+            } catch (Exception e) {
+                return defaultName;
+            }
+
+        }
+
+    }
+
+    //重复判断
+    public static boolean HaveSameNum(String num)
+    {
+        if(TextUtils.isEmpty(num))
+        {
+            return false;
+        }
+        return Contact_DB.find(Contact_DB.class,"bd_Num = ?",BdCardBean.FormatCardNum(num)).size()>0?true:false;
+    }
+    public static boolean HaveSameName(String name)
+    {
+        if(TextUtils.isEmpty(name))
+        {
+            return false;
+        }
+        return Contact_DB.find(Contact_DB.class,"contact_Name = ?",name).size()>0?true:false;
+    }
+    public static boolean HaveSamePhone(String phone)
+    {
+        if(TextUtils.isEmpty(phone))
+        {
+            return false;
+        }
+        return Contact_DB.find(Contact_DB.class,"phone = ?",phone).size()>0?true:false;
     }
 }

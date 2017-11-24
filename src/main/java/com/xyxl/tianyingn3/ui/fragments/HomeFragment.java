@@ -1,6 +1,9 @@
 package com.xyxl.tianyingn3.ui.fragments;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
@@ -10,6 +13,8 @@ import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -19,6 +24,7 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.GridView;
@@ -37,11 +43,15 @@ import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.logs.LogUtil;
+import com.xyxl.tianyingn3.solutions.GpsData;
+import com.xyxl.tianyingn3.ui.activities.ChatActivity;
 import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
 import com.xyxl.tianyingn3.ui.activities.SearchActivity;
 import com.xyxl.tianyingn3.ui.customview.ClearEditText;
 import com.xyxl.tianyingn3.ui.customview.CompassView;
 import com.xyxl.tianyingn3.ui.customview.HomeNoticeAdapter;
+import com.xyxl.tianyingn3.util.CommonUtil;
+import com.xyxl.tianyingn3.util.DataUtil;
 
 import java.util.List;
 import java.util.Locale;
@@ -125,9 +135,19 @@ public class HomeFragment extends BaseFragment {
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mOrientationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 
-        if(mOrientationSensor == null)
-        {
-            getHoldingActivity().ShowToast(getResources().getString(R.string.no_sensor));
+        if (mOrientationSensor == null) {
+//            getHoldingActivity().ShowToast(getResources().getString(R.string.no_sensor));
+
+            Notice_DB n = new Notice_DB();
+            n.setNoticeType(1);
+            n.setNoticeTime(System.currentTimeMillis());
+            n.setNoticeRemark("");
+            n.setNoticeNum("");
+            n.setNoticeAddress("");
+            n.setNoticeCon(getResources().getString(R.string.no_sensor));
+            n.save();
+            AppBus.getInstance().post(n);
+
         }
         mDirection = 0.0f;
         mTargetDirection = 0.0f;
@@ -167,6 +187,14 @@ public class HomeFragment extends BaseFragment {
                 {
                     tvBeams.append(" "+beams[i]+" ");
                 }
+
+                //
+                tvBeams.setText(
+                        MyPosition.getInstance().getMyLon()+":"+MyPosition.getInstance().getMyLat()+"\n"+
+                        DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLon()),1)
+                        +":"+DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLat()),1)+"\n"+
+                        new String(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLon()))+":"+
+                                new String(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLat())));
             }
         });
 
@@ -203,9 +231,86 @@ public class HomeFragment extends BaseFragment {
             }
         });
 
+        //通知事件
+        noticeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Notice_DB tmpN = noticeDatas.get(position);
+                if(tmpN.getNoticeType() == 0)
+                {
+                    long _id = CommonUtil.Str2long(tmpN.getNoticeRemark());
+                    if(_id >= 0)
+                    {
+                        Message_DB msg = Message_DB.findById(Message_DB.class,_id);
+                        if(msg != null)
+                        {
+                            Intent intent = new Intent(getActivity(),ChatActivity.class);
+                            intent.putExtra("msg",msg);
+                            startActivity(intent);
+                        }
+                        else
+                        {
+                            getHoldingActivity().ShowToast(getResources().getString(R.string.msg_miss));
+                            tmpN.delete();
+                            noticeDatas.remove(position);
+                            RefreshUI();
+                        }
+                    }
+                }
+                else if(tmpN.getNoticeType() == 1)
+                {
+                    if(getResources().getString(R.string.permission_denied).equals(tmpN.getNoticeCon()))
+                    {
+                        requestPosPermission();
+                        tmpN.delete();
+                        noticeDatas.remove(position);
+                        RefreshUI();
+                    }
+                }
+            }
+        });
+
         RefreshUI();
 
 
+    }
+
+    private void requestPosPermission() {
+        if (ContextCompat.checkSelfPermission(getHoldingActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getHoldingActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getHoldingActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getHoldingActivity(),
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA},
+                    3);
+        }
+    }
+
+    private static final int REQUEST_PERMISSION_CAMERA_CODE = 1;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 3) {
+            int grantResult = grantResults[0];
+            boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
+            LogUtil.i("onRequestPermissionsResult granted=" + granted);
+            if(!granted)
+            {
+                Notice_DB n = new Notice_DB();
+                n.setNoticeType(1);
+                n.setNoticeTime(System.currentTimeMillis());
+                n.setNoticeRemark("");
+                n.setNoticeNum("");
+                n.setNoticeAddress("");
+                n.setNoticeCon(getResources().getString(R.string.permission_denied));
+                n.save();
+                AppBus.getInstance().post(n);
+            }
+
+            RefreshUI();
+        }
     }
 
     private void RefreshBtnBox() {

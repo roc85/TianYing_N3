@@ -34,7 +34,7 @@ public class SettingSharedPreference {
         return res;
     }
 
-    public static void setDataString(Context c , String tag , int con)
+    public static void setDataInt(Context c , String tag , int con)
     {
         SharedPreferences.Editor edi=
                 c.getSharedPreferences("setting", Context.MODE_PRIVATE).edit();

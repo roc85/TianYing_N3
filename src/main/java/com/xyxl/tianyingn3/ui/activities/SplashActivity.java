@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.xyxl.tianyingn3.R;
+import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Msg_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
+import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.logs.LogUtil;
 
 import java.security.Key;
@@ -36,15 +38,18 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void initData() {
-        //去除【本机】联系人
-        List<Contact_DB> cList = Contact_DB.find(Contact_DB.class,"contact_Name = ?", getResources().getString(R.string.this_device));
-        if(cList.size()>0)
-        {
-            for(int i=0;i<cList.size();i++)
-            {
-                cList.get(i).delete();
-            }
-        }
+//        //去除【本机】联系人
+//        List<Contact_DB> cList = Contact_DB.find(Contact_DB.class,"contact_Name = ?", getResources().getString(R.string.this_device));
+//        if(cList.size()>0)
+//        {
+//            for(int i=0;i<cList.size();i++)
+//            {
+//                cList.get(i).delete();
+//            }
+//        }
+
+        //写入上次北斗卡号
+        BdCardBean.getInstance().setIdNum(SettingSharedPreference.getDataString(this,LAST_BD_CARD_NUM));
 
         //去除上次剩余通知
         Notice_DB.deleteAll(Notice_DB.class);

@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 
+import com.xyxl.tianyingn3.bean.SortModel;
+
 import java.util.List;
 
 /**

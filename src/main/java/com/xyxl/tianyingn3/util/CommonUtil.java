@@ -75,4 +75,23 @@ public class CommonUtil {
         }
         return res;
     }
+    /**
+     * long，无效时返回0
+     *
+     * @param src the src
+     * @return the double
+     */
+    public static long Str2long(String src)
+    {
+        long res = -1;
+        try
+        {
+            res = Long.valueOf(src);
+        }
+        catch(Exception e)
+        {
+//            LogUtil.e(e.toString());
+        }
+        return res;
+    }
 }

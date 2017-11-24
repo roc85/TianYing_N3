@@ -1,5 +1,7 @@
 package com.xyxl.tianyingn3.util;
 
+import com.xyxl.tianyingn3.bean.SortModel;
+
 import java.util.Comparator;
 
 public class PinyinComparator implements Comparator<SortModel> {

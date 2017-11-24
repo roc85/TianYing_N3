@@ -6,6 +6,7 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import com.xyxl.tianyingn3.global.TestMsg;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.solutions.BdSdk_v2_1;
 import com.xyxl.tianyingn3.ui.activities.BluetoothActivity;
+import com.xyxl.tianyingn3.util.ImageUtil;
 
 /**
  * Created by Administrator on 2017/11/13 16:58
@@ -36,7 +38,11 @@ public class SettingFragment extends BaseFragment {
 
     private boolean isTesting = false;
 
+    //
     private RelativeLayout btSetBox;
+    private ImageView setHead;
+    private TextView setTextName;
+
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
 
@@ -82,11 +88,20 @@ public class SettingFragment extends BaseFragment {
             }
         });
 
+        //
         btSetBox = (RelativeLayout)view.findViewById(R.id.btSetBox);
         btSetBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getHoldingActivity().OpenActivity(false, BluetoothActivity.class);
+            }
+        });
+
+        setHead = (ImageView)view.findViewById(R.id.imageSetHead);
+        setHead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }

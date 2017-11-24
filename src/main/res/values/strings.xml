@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">天应助手N3</string>
+    <string name="app_name_en">TianYingN3</string>
     <string name="device_name">天应盒子N3</string>
 
     <string name="title_activity_base">BaseActivity</string>
@@ -54,7 +55,7 @@
     <string name="connected_failed">设备连接失败</string>
 
     <!--传感器相关-->
-    <string name="no_sensor">不支持方向传感器</string>
+    <string name="no_sensor">手机不支持指南针功能</string>
 
     <!--北斗信息相关-->
     <string name="bd_card_num">北斗卡号:</string>
@@ -68,6 +69,7 @@
     <string name="pos_info">位置开关</string>
     <string name="pos_send_on">附带位置</string>
     <string name="pos_send_off">关闭位置</string>
+    <string name="cant_send_msg">设备未正确连接，不可发送信息</string>
 
     <!--对话框相关-->
     <string name="confirm">确定</string>
@@ -79,11 +81,32 @@
 
     <!--联系人相关-->
     <string name="this_device">#本机#</string>
+    <string name="phone_num">手机号:</string>
+    <string name="remark_info">备注信息:</string>
+    <string name="name_cant_null">姓名不可为空</string>
+    <string name="have_same_name">该用户名已使用</string>
+    <string name="have_same_num">该北斗卡号已使用</string>
+    <string name="have_same_phone">该手机号已使用</string>
 
     <!--设置页面相关-->
     <string name="login_or_register">登录/注册</string>
     <string name="bt_set">设备连接</string>
     <string name="pos_set">定位设置</string>
+
+    <!--按钮相关-->
+    <string name="edit">编辑</string>
+    <string name="share">分享</string>
+    <string name="delete">删除</string>
+
+    <!--权限相关-->
+    <string name="permission_denied">有权限被禁止，可能影响使用</string>
+
+    <!--错误提示相关-->
+    <string name="msg_miss">消息丢失，无法查看</string>
+
+    <!--通知栏相关-->
+    <string name="new_msg_title">消息提醒</string>
+    <string name="new_msg_notice">有新的消息</string>
 
     <!--联系人布局相关-->
     <array name="waveSideBarLetters">

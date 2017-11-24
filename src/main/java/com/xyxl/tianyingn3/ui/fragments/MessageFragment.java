@@ -54,7 +54,7 @@ public class MessageFragment extends BaseFragment {
         List<Fragment> fragmentList = new ArrayList<Fragment>();
         fragmentList.add(new CommunicationFragment());
         fragmentList.add(new ContactFragment());
-        fragmentList.add(new GroupFragment());
+//        fragmentList.add(new GroupFragment());
 //		MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager(),
 //				fragmentList);
         Activity a = getHoldingActivity();
@@ -78,12 +78,12 @@ public class MessageFragment extends BaseFragment {
                     textMsg.setTextColor(0xFF000000);
                     textGroup.setTextColor(0xFF000000);
                 }
-                if(arg0 == 2)
-                {
-                    textGroup.setTextColor(0xFFFF0000);
-                    textContract.setTextColor(0xFF000000);
-                    textMsg.setTextColor(0xFF000000);
-                }
+//                if(arg0 == 2)
+//                {
+//                    textGroup.setTextColor(0xFFFF0000);
+//                    textContract.setTextColor(0xFF000000);
+//                    textMsg.setTextColor(0xFF000000);
+//                }
             }
 
             @Override
@@ -97,7 +97,7 @@ public class MessageFragment extends BaseFragment {
                 else
                 {
                     titleTexts[currentIndex].setTextColor(Color.argb(0xFF,(int)(0xFF*(1-arg1)),0x00,0x00));
-                    if(currentIndex<2)
+                    if(currentIndex<1)
                     {
                         titleTexts[currentIndex+1].setTextColor(Color.argb(0xFF,(int)(0xFF*arg1),0x00,0x00));
                     }
@@ -133,16 +133,16 @@ public class MessageFragment extends BaseFragment {
                 currentIndex = 1;
             }
         });
-        textGroup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                textMsg.setTextColor(0xFF000000);
-                textContract.setTextColor(0xFFFF0000);
-                textGroup.setTextColor(0xFF000000);
-                viewFragment.setCurrentItem(2);
-                currentIndex = 2;
-            }
-        });
+//        textGroup.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                textMsg.setTextColor(0xFF000000);
+//                textContract.setTextColor(0xFFFF0000);
+//                textGroup.setTextColor(0xFF000000);
+//                viewFragment.setCurrentItem(2);
+//                currentIndex = 2;
+//            }
+//        });
     }
 
     @Override

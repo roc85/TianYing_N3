@@ -18,6 +18,8 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
+import com.xyxl.tianyingn3.bean.BtConnectInfo;
+import com.xyxl.tianyingn3.bluetooth.BTDeviceInfos;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
@@ -84,9 +86,15 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
         newMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowToast("New Msg");
-                Intent intent = new Intent(getActivity(), NewMsgActivity.class);
-                startActivity(intent);
+                if(BtConnectInfo.getInstance().isConnect() || !TextUtils.isEmpty(BdCardBean.getInstance().getIdNum()))
+                {
+                    Intent intent = new Intent(getActivity(), NewMsgActivity.class);
+                    startActivity(intent);
+                }
+                else
+                {
+                    ShowToast(getResources().getString(R.string.cant_send_msg));
+                }
 
             }
         });

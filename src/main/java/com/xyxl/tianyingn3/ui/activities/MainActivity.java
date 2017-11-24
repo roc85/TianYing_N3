@@ -24,6 +24,7 @@ import com.xyxl.tianyingn3.bluetooth.BluetoothService;
 import com.xyxl.tianyingn3.bluetooth.BtSendDatas;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Msg_DB;
+import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.logs.LogUtil;
@@ -98,9 +99,14 @@ public class MainActivity extends BaseActivity {
     }
 
     private void requestPosPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.WRITE_EXTERNAL_STORAGE}, 3);
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA},
+                    3);
         }
     }
 
@@ -113,7 +119,18 @@ public class MainActivity extends BaseActivity {
             int grantResult = grantResults[0];
             boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
             LogUtil.i("onRequestPermissionsResult granted=" + granted);
-
+            if(!granted)
+            {
+                Notice_DB n = new Notice_DB();
+                n.setNoticeType(1);
+                n.setNoticeTime(System.currentTimeMillis());
+                n.setNoticeRemark("");
+                n.setNoticeNum("");
+                n.setNoticeAddress("");
+                n.setNoticeCon(getResources().getString(R.string.permission_denied));
+                n.save();
+                AppBus.getInstance().post(n);
+            }
         }
     }
     private void initData() {

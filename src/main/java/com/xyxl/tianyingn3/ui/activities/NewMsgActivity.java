@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bluetooth.BtSendDatas;
+import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.TestMsg;
@@ -46,13 +47,18 @@ public class NewMsgActivity extends BaseActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button3:
-                Message_DB msgDb = new Message_DB();
+                final Message_DB msgDb = new Message_DB();
                 try
                 {
+
                     msgDb.setRcvAddress(BdCardBean.FormatCardNum(editText.getText().toString()));
-                    msgDb.setRcvUserName(BdCardBean.FormatCardNum(editText.getText().toString()));
+                    msgDb.setRcvUserId(Contact_DB.getIdViaAddress(msgDb.getRcvAddress()));
+                    msgDb.setRcvUserName(Contact_DB.getNameViaId(msgDb.getRcvUserId(),msgDb.getRcvAddress()));
+
                     msgDb.setSendAddress(BdCardBean.getInstance().getIdNum());
-                    msgDb.setSendUserName(BdCardBean.getInstance().getIdNum());
+                    msgDb.setSendUserId(Contact_DB.getIdViaAddress(msgDb.getSendAddress()));
+                    msgDb.setSendUserName(Contact_DB.getNameViaId(msgDb.getSendUserId(),msgDb.getSendAddress()));
+
                     msgDb.setMsgTime(System.currentTimeMillis());
                     msgDb.setMsgType(0);
                     msgDb.setMsgSendStatue(0);
@@ -72,6 +78,25 @@ public class NewMsgActivity extends BaseActivity implements View.OnClickListener
                 }
                 AppBus.getInstance().post(msgDb);
                 AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA(editText.getText().toString(), 1, 2, editText2.getText().toString()), null));
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while(msgDb.getMsgSendStatue() == 0 && System.currentTimeMillis()-msgDb.getMsgTime()<10*1000)
+                        {
+//                            LogUtil.e("sending_wait");
+                        }
+                        Message_DB msgTmp = Message_DB.findById(Message_DB.class,msgDb.getId());
+
+                        if(msgTmp.getMsgSendStatue() == 0)
+                        {
+                            msgTmp.setMsgSendStatue(2);
+                            msgTmp.save();
+
+                        }
+
+                    }
+                }).start();
                 break;
         }
     }

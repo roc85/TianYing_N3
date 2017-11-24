@@ -4,38 +4,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xyxl.tianyingn3.ui.activities.NewContactActivity">
+    tools:context="com.xyxl.tianyingn3.ui.activities.ContractInfoActivity">
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
     <LinearLayout
-        android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="15dp"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/edName"
+        <RelativeLayout
+            android:id="@+id/headBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="name"
-            android:inputType="textPersonName"
-            android:textSize="14sp" />
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/imageHead"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@mipmap/ic_launcher_round" />
+        </RelativeLayout>
 
         <EditText
-            android:id="@+id/edNum"
+            android:id="@+id/editName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:ems="10"
-            android:hint="num"
-            android:inputType="number"
-            android:textSize="14sp" />
+            android:hint="姓名"
+            android:inputType="text" />
 
-        <Button
-            android:id="@+id/btnAdd"
+        <EditText
+            android:id="@+id/editBdNum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="add"
-            android:textSize="18sp" />
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:ems="10"
+            android:hint="北斗卡号"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/editPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:ems="10"
+            android:hint="手机号码"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/editRemark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:ems="10"
+            android:hint="备注信息"
+            android:inputType="text" />
+
     </LinearLayout>
 </RelativeLayout>

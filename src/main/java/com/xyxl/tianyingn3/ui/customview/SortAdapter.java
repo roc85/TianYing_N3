@@ -1,16 +1,30 @@
-package com.xyxl.tianyingn3.util;
+package com.xyxl.tianyingn3.ui.customview;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import com.xyxl.tianyingn3.R;
+import com.xyxl.tianyingn3.bean.SortModel;
+import com.xyxl.tianyingn3.database.Contact_DB;
+import com.xyxl.tianyingn3.ui.activities.ContractInfoActivity;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -35,9 +49,35 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
         ViewHolder viewHolder = new ViewHolder(view);
         viewHolder.tvName = (TextView) view.findViewById(R.id.tvName);
         viewHolder.tvNum = (TextView) view.findViewById(R.id.tvNum);
-        viewHolder.lineBox = (LinearLayout) view.findViewById(R.id.itemBox);
+        viewHolder.ivHead = (ImageView) view.findViewById(R.id.imageHead);
+        viewHolder.lineBox = (RelativeLayout) view.findViewById(R.id.itemBox);
         return viewHolder;
     }
+
+    Transformation transformation = new Transformation() {
+        @Override
+        public Bitmap transform(Bitmap source) {
+            int width = source.getWidth();
+            int height = source.getHeight();
+            int size = Math.min(width, height);
+            Bitmap blankBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(blankBitmap);
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            canvas.drawCircle(size / 2, size / 2, size / 2, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(source, 0, 0, paint);
+            if (source != null && !source.isRecycled()) {
+                source.recycle();
+            }
+            return blankBitmap;
+        }
+
+        @Override
+        public String key() {
+            return "squareup";
+        }
+    };
 
     @Override
     public void onBindViewHolder(final SortAdapter.ViewHolder holder, final int position) {
@@ -51,23 +91,35 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
             });
 
         }
+        try {
+            holder.tvName.setText(this.mData.get(position).getName());
+            holder.tvNum.setText(this.mData.get(position).getNum());
+            holder.lineBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    Toast.makeText(mContext, mData.get(position).getName(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(mContext, ContractInfoActivity.class);
+//                    intent.putExtra("contact", Contact_DB.findById(Contact_DB.class,Contact_DB.getIdViaName(mData.get(position).getName())));
+                    intent.putExtra("contact_id", mData.get(position).get_id());
+                    mContext.startActivity(intent);
+                }
+            });
 
-        holder.tvName.setText(this.mData.get(position).getName());
-        holder.tvNum.setText(this.mData.get(position).getNum());
+            Picasso.with(mContext).load(new File(this.mData.get(position).getHeadFile())).
+                    transform(transformation).placeholder(R.mipmap.ic_launcher_round).into(holder.ivHead);
 
-        holder.tvName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            holder.tvName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-            }
-        });
+                }
+            });
 
-        holder.lineBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(mContext, mData.get(position).getName(),Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        } catch (Exception e) {
+
+        }
+
     }
 
     @Override
@@ -89,7 +141,8 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvNum;
-        LinearLayout lineBox;
+        ImageView ivHead;
+        RelativeLayout lineBox;
 
         public ViewHolder(View itemView) {
             super(itemView);

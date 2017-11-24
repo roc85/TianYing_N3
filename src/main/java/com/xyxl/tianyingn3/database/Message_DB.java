@@ -26,6 +26,14 @@ public class Message_DB extends SugarRecord implements Serializable {
     private String rcvAddress;
 
     @Expose
+    //消息接收方id
+    private long rcvUserId;
+
+    @Expose
+    //消息发送方id
+    private long sendUserId;
+
+    @Expose
     //消息类型 0-发送 1-接收
     private int msgType;
 
@@ -69,6 +77,22 @@ public class Message_DB extends SugarRecord implements Serializable {
 //        this.msgId = msgId;
 //    }
 
+    public long getRcvUserId() {
+        return rcvUserId;
+    }
+
+    public void setRcvUserId(long rcvUserId) {
+        this.rcvUserId = rcvUserId;
+    }
+
+    public long getSendUserId() {
+        return sendUserId;
+    }
+
+    public void setSendUserId(long sendUserId) {
+        this.sendUserId = sendUserId;
+    }
+
     public String getSendAddress() {
         return sendAddress;
     }
@@ -85,6 +109,7 @@ public class Message_DB extends SugarRecord implements Serializable {
         this.rcvAddress = rcvAddress;
     }
 
+    // 0-发送 1-接收
     public int getMsgType() {
         return msgType;
     }

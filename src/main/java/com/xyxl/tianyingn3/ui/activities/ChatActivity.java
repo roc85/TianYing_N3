@@ -1,9 +1,20 @@
 package com.xyxl.tianyingn3.ui.activities;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -14,16 +25,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
+import com.xyxl.tianyingn3.bean.BtConnectInfo;
 import com.xyxl.tianyingn3.bean.MyPosition;
+import com.xyxl.tianyingn3.bluetooth.BluetoothService;
 import com.xyxl.tianyingn3.bluetooth.BtSendDatas;
+import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
+import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.solutions.BdSdk_v2_1;
+import com.xyxl.tianyingn3.solutions.GpsData;
 import com.xyxl.tianyingn3.ui.customview.ChatAdapter;
+import com.xyxl.tianyingn3.util.DataUtil;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.util.List;
 
 /**
@@ -38,6 +60,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     private ImageView imageBack;
     private ImageView imageHead;
     private TextView textUserName;
+    private TextView textAddInfo;
     private LinearLayout userInfos;
     private RelativeLayout titleBox;
     private ImageView imageAddInput;
@@ -51,7 +74,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     private ListView msgLists;
 
     //变量
-    private String userName;
+    private String userName, userBdNum;
+    private Contact_DB thisContact;
     private List<Message_DB> chatDatas;
     private ChatAdapter chatAdapter;
 
@@ -69,8 +93,22 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     private void initData() {
         try {
             thisMsg = (Message_DB) getIntent().getExtras().get("msg");
-            chatDatas = Message_DB.find(Message_DB.class,"send_Address = ? AND rcv_Address = ?",
-                    new String[]{BdCardBean.getInstance().getIdNum(),thisMsg.getRcvAddress()},null,"msg_Time",null);
+            String num = "";
+            if(thisMsg.getMsgType() == 0)
+            {
+                num = thisMsg.getRcvAddress();
+            }
+            else if(thisMsg.getMsgType() == 1)
+            {
+                num = thisMsg.getSendAddress();
+            }
+            userBdNum = num;
+            thisContact = Contact_DB.findById(Contact_DB.class,Contact_DB.getIdViaAddress(userBdNum));
+
+            chatDatas = Message_DB.find(Message_DB.class,
+                    "( send_Address = ? AND rcv_Address = ? AND msg_Type = ? ) OR (send_Address = ? AND rcv_Address = ? AND msg_Type = ?)",
+                    new String[]{BdCardBean.getInstance().getIdNum(),num,"0",num,BdCardBean.getInstance().getIdNum() ,"1"},
+                    null,"msg_Time",null);
             chatAdapter = new ChatAdapter(ChatActivity.this,chatDatas);
 
         } catch (Exception e) {
@@ -84,6 +122,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         imageBack = (ImageView) findViewById(R.id.imageBack);
         imageHead = (ImageView) findViewById(R.id.imageHead);
         textUserName = (TextView) findViewById(R.id.textUserName);
+        textAddInfo = (TextView) findViewById(R.id.textAddInfo);
         userInfos = (LinearLayout) findViewById(R.id.userInfos);
         titleBox = (RelativeLayout) findViewById(R.id.titleBox);
         imageAddInput = (ImageView) findViewById(R.id.imageAddInput);
@@ -102,8 +141,12 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
 
         btnSend.setOnClickListener(this);
         imageAddInput.setOnClickListener(this);
+        imageBack.setOnClickListener(this);
+        imageInfo.setOnClickListener(this);
 
         textPos.setText("Pos:\n"+ MyPosition.getInstance().getMyLon()+"\n"+MyPosition.getInstance().getMyLat());
+        textAddInfo.setText("0/"+BD_BYTES_LENS[BdCardBean.getInstance().getCardLv()]);
+        textAddInfo.setTextColor(getResources().getColor(R.color.black));
 
         //设置用户
         if(thisMsg.getMsgType() == 0)
@@ -115,14 +158,115 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
             userName = thisMsg.getSendUserName();
         }
         textUserName.setText(userName);
+
+        if(thisContact != null)
+        {
+            Picasso.with(this).load(new File(thisContact.getHead())).
+                    transform(transformation).
+                    placeholder(R.mipmap.ic_launcher_round).
+                    into(imageHead);
+        }
+
+        //位置选择
+        switchSendPos.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                try {
+                    textAddInfo.setText((editInput.getText().toString().getBytes("GB2312").length+(switchSendPos.isChecked()?8:0))+"/"+BD_BYTES_LENS[BdCardBean.getInstance().getCardLv()]);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        //根据输入框输入值的改变来过滤搜索
+        editInput.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //当输入框里面的值为空，更新为原来的列表，否则为过滤数据列表
+                if(!TextUtils.isEmpty(s.toString()))
+                {
+                    editInput.setTextColor(getResources().getColor(R.color.white));
+                    btnSend.setEnabled(true);
+//                    if(switchSendPos.isChecked())
+//                    {
+//
+//                    }
+//                    else
+//                    {
+                    try {
+                        textAddInfo.setText((editInput.getText().toString().getBytes("GB2312").length+(switchSendPos.isChecked()?8:0))+"/"+BD_BYTES_LENS[BdCardBean.getInstance().getCardLv()]);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    if(s.toString().getBytes().length>BD_BYTES_LENS[BdCardBean.getInstance().getCardLv()])
+                        {
+                            editInput.setTextColor(getResources().getColor(R.color.red));
+                            btnSend.setEnabled(false);
+                            textAddInfo.setTextColor(getResources().getColor(R.color.red));
+                        }
+                        else
+                        {
+                            editInput.setTextColor(getResources().getColor(R.color.white));
+                            btnSend.setEnabled(true);
+                            textAddInfo.setTextColor(getResources().getColor(R.color.black));
+                        }
+//                    }
+
+                }
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
+    Transformation transformation = new Transformation() {
+        @Override
+        public Bitmap transform(Bitmap source) {
+            int width = source.getWidth();
+            int height = source.getHeight();
+            int size = Math.min(width, height);
+            Bitmap blankBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(blankBitmap);
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            canvas.drawCircle(size / 2, size / 2, size / 2, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            canvas.drawBitmap(source, 0, 0, paint);
+            if (source != null && !source.isRecycled()) {
+                source.recycle();
+            }
+            return blankBitmap;
+        }
+
+        @Override
+        public String key() {
+            return "squareup";
+        }
+    };
     private void RefreshUI()
     {
         textPos.setText("Pos:\n"+ MyPosition.getInstance().getMyLon()+"\n"+MyPosition.getInstance().getMyLat());
 
-        chatDatas = Message_DB.find(Message_DB.class,"send_Address = ? AND rcv_Address = ?",
-                new String[]{BdCardBean.getInstance().getIdNum(),thisMsg.getRcvAddress()},null,"msg_Time",null);
+//        chatDatas = Message_DB.find(Message_DB.class,"send_Address = ? AND rcv_Address = ?",
+//                new String[]{BdCardBean.getInstance().getIdNum(),thisMsg.getRcvAddress()},null,"msg_Time",null);
+
+        chatDatas = Message_DB.find(Message_DB.class,
+                "( send_Address = ? AND rcv_Address = ? AND msg_Type = ? ) OR (send_Address = ? AND rcv_Address = ? AND msg_Type = ?)",
+                new String[]{BdCardBean.getInstance().getIdNum(),userBdNum,"0",userBdNum,BdCardBean.getInstance().getIdNum() ,"1"},
+                null,"msg_Time",null);
         chatAdapter = new ChatAdapter(ChatActivity.this,chatDatas);
         chatAdapter.notifyDataSetChanged();
         msgLists.setAdapter(chatAdapter);
@@ -140,41 +284,174 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
         });
     }
 
+    // Hander
+    public final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1: // Notify change
+                    RefreshUI();
+                    break;
+            }
+        }
+    };
+
+    //发送报文方法
+    private void SendMsg()
+    {
+        if(switchSendPos.isChecked())
+        {
+            //附带位置
+            final Message_DB msgDb = new Message_DB();
+            try
+            {
+//                        msgDb.setRcvAddress(userName);
+//                        msgDb.setRcvUserName(userName);
+//                        msgDb.setSendAddress(BdCardBean.getInstance().getIdNum());
+//                        msgDb.setSendUserName(BdCardBean.getInstance().getIdNum());
+
+                msgDb.setRcvAddress(userBdNum);
+                msgDb.setRcvUserId(Contact_DB.getIdViaAddress(msgDb.getRcvAddress()));
+                msgDb.setRcvUserName(Contact_DB.getNameViaId(msgDb.getRcvUserId(),msgDb.getRcvAddress()));
+
+                msgDb.setSendAddress(BdCardBean.getInstance().getIdNum());
+                msgDb.setSendUserId(Contact_DB.getIdViaAddress(msgDb.getSendAddress()));
+                msgDb.setSendUserName(Contact_DB.getNameViaId(msgDb.getSendUserId(),msgDb.getSendAddress()));
+
+                msgDb.setMsgTime(System.currentTimeMillis());
+                msgDb.setMsgType(0);
+                msgDb.setMsgSendStatue(0);
+                msgDb.setMsgCon(editInput.getText().toString());
+                msgDb.setMsgPos(DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLon()),0)
+                        +DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLat()),0));
+                msgDb.setRemark("");
+                msgDb.setDelFlag(0);
+
+                long _id = msgDb.save();
+                BdCardBean.getInstance().setMsgSendingId(_id);
+                LogUtil.i(_id+" saved");
+
+            }
+            catch(Exception e)
+            {
+                LogUtil.e(e.toString());
+            }
+            String con = "";
+            try {
+                con = msgDb.getMsgPos()+DataUtil.byte2HexStr(msgDb.getMsgCon().getBytes("GB2312"),0);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+
+            }
+            AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA(userBdNum, 1, 1, con), null));
+
+            //超时判断
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(msgDb.getMsgSendStatue() == 0 && System.currentTimeMillis()-msgDb.getMsgTime()<10*1000)
+                    {
+
+                    }
+                    Message_DB msgTmp = Message_DB.findById(Message_DB.class,msgDb.getId());
+
+                    if(msgTmp.getMsgSendStatue() == 0)
+                    {
+                        msgTmp.setMsgSendStatue(2);
+                        msgTmp.save();
+                        mHandler.sendEmptyMessage(1);
+                    }
+
+                }
+            }).start();
+
+            editInput.setText("");
+            textAddInfo.setText("0/"+BD_BYTES_LENS[BdCardBean.getInstance().getCardLv()]);
+            textAddInfo.setTextColor(getResources().getColor(R.color.black));
+            RefreshUI();
+
+        }
+        else
+        {
+            //无位置
+            if(!TextUtils.isEmpty(editInput.getText().toString()))
+            {
+                final Message_DB msgDb = new Message_DB();
+                try
+                {
+//                        msgDb.setRcvAddress(userName);
+//                        msgDb.setRcvUserName(userName);
+//                        msgDb.setSendAddress(BdCardBean.getInstance().getIdNum());
+//                        msgDb.setSendUserName(BdCardBean.getInstance().getIdNum());
+
+                    msgDb.setRcvAddress(userBdNum);
+                    msgDb.setRcvUserId(Contact_DB.getIdViaAddress(msgDb.getRcvAddress()));
+                    msgDb.setRcvUserName(Contact_DB.getNameViaId(msgDb.getRcvUserId(),msgDb.getRcvAddress()));
+
+                    msgDb.setSendAddress(BdCardBean.getInstance().getIdNum());
+                    msgDb.setSendUserId(Contact_DB.getIdViaAddress(msgDb.getSendAddress()));
+                    msgDb.setSendUserName(Contact_DB.getNameViaId(msgDb.getSendUserId(),msgDb.getSendAddress()));
+
+                    msgDb.setMsgTime(System.currentTimeMillis());
+                    msgDb.setMsgType(0);
+                    msgDb.setMsgSendStatue(0);
+                    msgDb.setMsgCon(editInput.getText().toString());
+                    msgDb.setMsgPos("");
+                    msgDb.setRemark("");
+                    msgDb.setDelFlag(0);
+
+                    long _id = msgDb.save();
+                    BdCardBean.getInstance().setMsgSendingId(_id);
+                    LogUtil.i(_id+" saved");
+
+                }
+                catch(Exception e)
+                {
+                    LogUtil.e(e.toString());
+                }
+                AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA(userBdNum, 1, 2, editInput.getText().toString()), null));
+
+                //超时判断
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while(msgDb.getMsgSendStatue() == 0 && System.currentTimeMillis()-msgDb.getMsgTime()<10*1000)
+                        {
+
+                        }
+                        Message_DB msgTmp = Message_DB.findById(Message_DB.class,msgDb.getId());
+
+                        if(msgTmp.getMsgSendStatue() == 0)
+                        {
+                            msgTmp.setMsgSendStatue(2);
+                            msgTmp.save();
+                            mHandler.sendEmptyMessage(1);
+                        }
+
+                    }
+                }).start();
+
+                editInput.setText("");
+                textAddInfo.setText("0/"+BD_BYTES_LENS[BdCardBean.getInstance().getCardLv()]);
+                textAddInfo.setTextColor(getResources().getColor(R.color.black));
+                RefreshUI();
+            }
+        }
+
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSend:
-                if(!TextUtils.isEmpty(editInput.getText().toString()))
+                if(BtConnectInfo.getInstance().isConnect() || !TextUtils.isEmpty(BdCardBean.getInstance().getIdNum()))
                 {
-                    Message_DB msgDb = new Message_DB();
-                    try
-                    {
-                        msgDb.setRcvAddress(userName);
-                        msgDb.setRcvUserName(userName);
-                        msgDb.setSendAddress(BdCardBean.getInstance().getIdNum());
-                        msgDb.setSendUserName(BdCardBean.getInstance().getIdNum());
-                        msgDb.setMsgTime(System.currentTimeMillis());
-                        msgDb.setMsgType(0);
-                        msgDb.setMsgSendStatue(0);
-                        msgDb.setMsgCon(editInput.getText().toString());
-                        msgDb.setMsgPos("");
-                        msgDb.setRemark("");
-                        msgDb.setDelFlag(0);
-
-                        long _id = msgDb.save();
-                        BdCardBean.getInstance().setMsgSendingId(_id);
-                        LogUtil.i(_id+" saved");
-
-                    }
-                    catch(Exception e)
-                    {
-                        LogUtil.e(e.toString());
-                    }
-                    AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendTXA(userName, 1, 2, editInput.getText().toString()), null));
-
-                    editInput.setText("");
-                    RefreshUI();
+                    SendMsg();
                 }
+                else
+                {
+                    ShowToast(getResources().getString(R.string.cant_send_msg));
+                }
+
                 break;
             case R.id.imageAddInput:
                 if(addInputBox.getVisibility() == View.VISIBLE)
@@ -185,6 +462,25 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
                 {
                     addInputBox.setVisibility(View.VISIBLE);
                 }
+                break;
+            case R.id.imageBack:
+                finish();
+                break;
+
+            case R.id.imageInfo:
+                if(thisContact!=null)
+                {
+                    Intent intent = new Intent(ChatActivity.this, ContractInfoActivity.class);
+                    intent.putExtra("contact", thisContact);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Intent intent = new Intent(ChatActivity.this, NewContactActivity.class);
+                    intent.putExtra("num", userBdNum);
+                    startActivity(intent);
+                }
+
                 break;
         }
     }
@@ -209,5 +505,12 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener {
     public void onStop() {
         super.onStop();
         AppBus.getInstance().unregister(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        RefreshUI();
+        RefreshUI();
     }
 }

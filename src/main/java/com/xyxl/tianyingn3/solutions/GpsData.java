@@ -1,6 +1,9 @@
 package com.xyxl.tianyingn3.solutions;
 
 
+import com.xyxl.tianyingn3.util.CommonUtil;
+
+import java.text.DecimalFormat;
 
 /**
  * 各地图API坐标系统比较与转换;
@@ -163,5 +166,39 @@ public class GpsData
         d=Double.valueOf(sTemp[0])+Double.valueOf(stemp0[0])/60;
         sDisplay=convertTodfm(d);
         return sDisplay;
+    }
+
+    public static byte[] GetPosDataBytes(double src)
+    {
+        byte[] res = new byte[4];
+
+        int du = (int) (src); // 获取整数部分
+        double temp = (src - (int)src) * 60;
+        int fen = (int)(temp);
+        double temp1 = (temp - (int)temp) * 60;
+        int miao =(int)temp1;
+        int Xiaomiao=(int) ((temp1 - (int)temp1)*60);
+
+        res[0] = (byte) du;
+        res[1] = (byte) fen;
+        res[2] = (byte) miao ;
+        res[3] = (byte) Xiaomiao;
+
+        return res;
+    }
+
+    public static String GetPosDisplayStr(byte[] src)
+    {
+        String res = "";
+        double d = convertToDecimal(src[0],src[1], CommonUtil.Str2double(src[2]+"."+src[3]));
+        DecimalFormat df = new DecimalFormat("#.000");
+        res = df.format(d);
+        return res;
+    }
+
+    public static double GetPosDisplayDouble(byte[] src)
+    {
+        double d = convertToDecimal(src[0],src[1], CommonUtil.Str2double(src[2]+"."+src[3]));
+        return d;
     }
 }
