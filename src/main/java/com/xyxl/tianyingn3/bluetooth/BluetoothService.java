@@ -32,6 +32,7 @@ import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bean.BtConnectInfo;
 import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
+import com.xyxl.tianyingn3.database.NewMsgCount_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.App;
 import com.xyxl.tianyingn3.global.AppBus;
@@ -43,6 +44,7 @@ import com.xyxl.tianyingn3.service.MainService;
 import com.xyxl.tianyingn3.solutions.BdSdk_v2_1;
 import com.xyxl.tianyingn3.solutions.BufferHandle;
 import com.xyxl.tianyingn3.ui.activities.MainActivity;
+import com.xyxl.tianyingn3.util.CommonUtil;
 import com.xyxl.tianyingn3.util.NotificationBroadcastReceiver;
 
 import java.nio.ByteBuffer;
@@ -139,37 +141,39 @@ public class BluetoothService extends Service implements FinalDatas{
 //            } catch (Exception e) {
 //                // TODO: handle exception
 //                notifyId = 100;
+        if(SettingSharedPreference.getDataInt(this,NOTICE_BAR_FLAG) == 0)
+        {
+            notifyId = (int) _Id;
+            mNotificationManager.cancel(notifyId);
 
-        notifyId = (int) _Id;
-        mNotificationManager.cancel(notifyId);
+            mBuilder.setContentTitle(getResources().getString(R.string.new_msg_title))
+                    .setContentText(str)
+                    .setTicker(getResources().getString(R.string.new_msg_notice));//通知首次出现在通知栏，带上升动画效果的
 
-        mBuilder.setContentTitle(getResources().getString(R.string.new_msg_title))
-                .setContentText(str)
-                .setTicker(getResources().getString(R.string.new_msg_notice));//通知首次出现在通知栏，带上升动画效果的
+            mNotificationManager.notify(notifyId, mBuilder.build());
 
-        mNotificationManager.notify(notifyId, mBuilder.build());
+            //新的通知
+            Intent intentClick = new Intent(getApplicationContext(), NotificationBroadcastReceiver.class);
+            intentClick.setAction("notification_clicked");
+            intentClick.putExtra("msg_id", _Id);
+            intentClick.putExtra("notice_type", 0);
+            intentClick.putExtra(NotificationBroadcastReceiver.TYPE, 1);
+            PendingIntent pendingIntentClick = PendingIntent.getBroadcast(getApplicationContext(), 0, intentClick, PendingIntent.FLAG_ONE_SHOT);
 
-        //新的通知
-        Intent intentClick = new Intent(getApplicationContext(), NotificationBroadcastReceiver.class);
-        intentClick.setAction("notification_clicked");
-        intentClick.putExtra("msg_id", _Id);
-        intentClick.putExtra("notice_type", 0);
-        intentClick.putExtra(NotificationBroadcastReceiver.TYPE, 1);
-        PendingIntent pendingIntentClick = PendingIntent.getBroadcast(getApplicationContext(), 0, intentClick, PendingIntent.FLAG_ONE_SHOT);
+            Intent intentCancel = new Intent(getApplicationContext(), NotificationBroadcastReceiver.class);
+            intentCancel.setAction("notification_cancelled");
+            intentCancel.putExtra(NotificationBroadcastReceiver.TYPE, 2);
+            PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(getApplicationContext(), 0, intentCancel, PendingIntent.FLAG_ONE_SHOT);
 
-        Intent intentCancel = new Intent(getApplicationContext(), NotificationBroadcastReceiver.class);
-        intentCancel.setAction("notification_cancelled");
-        intentCancel.putExtra(NotificationBroadcastReceiver.TYPE, 2);
-        PendingIntent pendingIntentCancel = PendingIntent.getBroadcast(getApplicationContext(), 0, intentCancel, PendingIntent.FLAG_ONE_SHOT);
+            mBuilder.setContentTitle(getResources().getString(R.string.new_msg_title))
+                    .setContentText(str)
+                    .setTicker(getResources().getString(R.string.new_msg_notice))
+                    .setContentIntent(pendingIntentClick)
+                    .setDeleteIntent(pendingIntentCancel);//通知首次出现在通知栏，带上升动画效果的
 
-        mBuilder.setContentTitle(getResources().getString(R.string.new_msg_title))
-                .setContentText(str)
-                .setTicker(getResources().getString(R.string.new_msg_notice))
-                .setContentIntent(pendingIntentClick)
-                .setDeleteIntent(pendingIntentCancel);//通知首次出现在通知栏，带上升动画效果的
+            mNotificationManager.notify(notifyId, mBuilder.build());
+        }
 
-        mNotificationManager.notify(notifyId, mBuilder.build());
-//        }
     }
     @Override
     public boolean onUnbind(Intent intent) {
@@ -178,6 +182,10 @@ public class BluetoothService extends Service implements FinalDatas{
         close();
         AppBus.getInstance().unregister(this);
         LogUtil.i(getResources().getString(R.string.ble_service_unbind));
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancelAll();
+
         return super.onUnbind(intent);
     }
 
@@ -232,7 +240,7 @@ public class BluetoothService extends Service implements FinalDatas{
                 LogUtil.i("测试发送"+data.getStrData());
                 sendmessage(data.getStrData());
                 //测试用
-                TestMsg.getInstance().AddSendNum();
+//                TestMsg.getInstance().AddSendNum();
 
             } else if (data.getType() == 1) {
                 sendmessage(data.getByteDatas());
@@ -246,7 +254,10 @@ public class BluetoothService extends Service implements FinalDatas{
         System.out.println("====" + sss);
     }
 
-
+    private void ShowToast(String con)
+    {
+        Toast.makeText(BluetoothService.this, con, Toast.LENGTH_SHORT).show();
+    }
     // Hander
     public final Handler mHandler = new Handler() {
         @Override
@@ -256,6 +267,7 @@ public class BluetoothService extends Service implements FinalDatas{
                     AppBus.getInstance().post(msg.obj);
                     if(msg.obj instanceof Message_DB)
                     {
+
                         try
                         {
                             Message_DB mTmp = (Message_DB) msg.obj;
@@ -269,9 +281,21 @@ public class BluetoothService extends Service implements FinalDatas{
                                 n.setNoticeAddress(mTmp.getRcvAddress());
                                 n.setNoticeCon("收到来自【"+mTmp.getSendUserName()+"】的北斗报文");
                                 n.save();
-                                ShowNotice(n.getNoticeCon(),mTmp.getId());
+                                ShowNotice(n.getNoticeCon(), CommonUtil.Str2long(mTmp.getSendAddress()));
+
                                 AppBus.getInstance().post(n);
                             }
+
+                            //清空新消息标识
+                            List<NewMsgCount_DB> nMsgList = NewMsgCount_DB.find(NewMsgCount_DB.class, "num_ID = ?",
+                                    CommonUtil.Str2long(mTmp.getRcvAddress())+"");
+                            if(nMsgList.size() > 0)
+                            {
+                                NewMsgCount_DB nMsg = nMsgList.get(0);
+
+                                AppBus.getInstance().post(nMsg);
+                            }
+
 
                         }
                         catch(Exception e)

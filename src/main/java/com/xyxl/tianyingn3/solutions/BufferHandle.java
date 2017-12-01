@@ -1,17 +1,27 @@
 package com.xyxl.tianyingn3.solutions;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Vibrator;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.baidu.mapapi.model.LatLng;
 import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bean.MessageBean;
 import com.xyxl.tianyingn3.bean.MyPosition;
 import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
+import com.xyxl.tianyingn3.database.NewMsgCount_DB;
 import com.xyxl.tianyingn3.database.PosInfo_DB;
+import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.global.TestMsg;
@@ -19,6 +29,7 @@ import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.util.CommonUtil;
 import com.xyxl.tianyingn3.util.DataUtil;
 
+import java.io.IOException;
 import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.List;
@@ -312,35 +323,7 @@ public class BufferHandle implements FinalDatas{
             BdCardBean.getInstance().setBeamLvs(tmp);
 
             return BdCardBean.getInstance();
-//            int tem4=0;
-//            int tem3=0;
-//            for(int i=0;i<10;i++)
-//            {
-////                globalData.setBeamLv(i, CommonUtil.Str2int(Str[3+i]));
-//                if(CommonUtil.Str2int(Str[3+i])==4)
-//                {
-//                    tem4++;
-//                }
-//                else if(CommonUtil.Str2int(Str[3+i])==3)
-//                {
-//                    tem3++;
-//                }
-//
-//            }
-//
-//            //判断RDSS信号强度
-//            if((tem4>1&&tem3>0)||tem4>2)
-//            {
-////                globalData.setRdssSignalLv(2);
-//            }
-//            else if(tem4<1&&tem3<3)
-//            {
-////                globalData.setRdssSignalLv(0);
-//            }
-//            else
-//            {
-////                globalData.setRdssSignalLv(1);
-//            }
+
 
         }
         //判断反馈信息
@@ -406,102 +389,116 @@ public class BufferHandle implements FinalDatas{
         else if(checkStr[1].equals("$BDTXR"))
         {
             LogUtil.i("测试接收");
-            Str=BdSdk_v2_1.BD_ReceiveTXR(s);
+            try {
+                Str = BdSdk_v2_1.BD_ReceiveTXR(s);
 
-            if(Str[4]==null||Str[4].length()<2)
-            {
-                //保存毫秒时间数据
-                Str[4] = System.currentTimeMillis()+"";
-            }
+                Message_DB msgDb = new Message_DB();
 
-            //测试用
-//            TestMsg.getInstance().AddRcvNum();
-//            MessageBean messageBean = new MessageBean();
-//            messageBean.setSendAddress(BdCardBean.getInstance().getIdNum());
-//            messageBean.setMsgCon(Str[5]);
-
-            Message_DB msgDb = new Message_DB();
-            try
-            {
                 msgDb.setRcvAddress(BdCardBean.getInstance().getIdNum());
                 msgDb.setRcvUserId(Contact_DB.getIdViaAddress(msgDb.getRcvAddress()));
-                msgDb.setRcvUserName(Contact_DB.getNameViaId(msgDb.getRcvUserId(),msgDb.getRcvAddress()));
+                msgDb.setRcvUserName(Contact_DB.getNameViaId(msgDb.getRcvUserId(), msgDb.getRcvAddress()));
 
                 msgDb.setSendAddress(Str[2]);
                 msgDb.setSendUserId(Contact_DB.getIdViaAddress(msgDb.getSendAddress()));
-                msgDb.setSendUserName(Contact_DB.getNameViaId(msgDb.getSendUserId(),msgDb.getSendAddress()));
+                msgDb.setSendUserName(Contact_DB.getNameViaId(msgDb.getSendUserId(), msgDb.getSendAddress()));
 
                 msgDb.setMsgTime(System.currentTimeMillis());
                 msgDb.setMsgType(1);
                 msgDb.setMsgSendStatue(1);
-                if(Str[3].equals("2"))
-                {
+                msgDb.setMsgCon(Str[5]);
+                msgDb.setMsgPos("");
+
+                if (Str[3].equals("2")) {
                     //混发
                     msgDb.setMsgCon(Str[5]);
                     msgDb.setMsgPos("");
-                }
-                else if(Str[3].equals("1"))
-                {
+                } else if (Str[3].equals("1")) {
                     //代码
-                    String pos = Str[5].substring(0,16);
+                    if (mContext.getResources().getString(R.string.msg_code_start_index).equals(Str[5].substring(0, 2))) {
+                        //符合协议，判断类型
+                        if (mContext.getResources().getString(R.string.msg_code_pos_msg).equals(Str[5].substring(2, 4))) {
+                            String pos = Str[5].substring(4, 20);
 
-                    PosInfo_DB p = new PosInfo_DB();
-                    p.setAltitude(0);
-                    p.setDirection(0);
-                    p.setLat(GpsData.GetPosDisplayDouble(DataUtil.hexStr2Bytes(pos.substring(8,16))));
-                    p.setLon(GpsData.GetPosDisplayDouble(DataUtil.hexStr2Bytes(pos.substring(0,8))));
-                    p.setSpeed(0);
-                    p.setTime(msgDb.getMsgTime());
-                    p.setUserName(msgDb.getSendUserName());
-                    p.setUserNum(msgDb.getSendAddress());
-                    p.setUserId(msgDb.getSendUserId());
-                    p.setRemark("");
-                    p.setOwner("");
+                            PosInfo_DB p = new PosInfo_DB();
+                            p.setAltitude(0);
+                            p.setDirection(0);
+                            p.setLon(GpsData.GetPosDisplayDouble(DataUtil.hexStr2Bytes(pos.substring(0, 8))));
+                            p.setLat(GpsData.GetPosDisplayDouble(DataUtil.hexStr2Bytes(pos.substring(8, 16))));
+                            p.setSpeed(0);
+                            p.setTime(msgDb.getMsgTime());
+                            p.setUserName(msgDb.getSendUserName());
+                            p.setUserNum(msgDb.getSendAddress());
+                            p.setUserId(msgDb.getSendUserId());
+                            p.setRemark("");
+                            p.setOwner("");
 
-                    p.save();
+                            p.save();
 
-                    try
-                    {
-                        String con = new String(DataUtil.hexStr2Bytes(Str[5].substring(16,Str[5].length())),"GB2312");
-                        msgDb.setMsgCon(con);
+                            try {
+                                String con = new String(DataUtil.hexStr2Bytes(Str[5].substring(20, Str[5].length()-2)), "GB2312");
+                                if(TextUtils.isEmpty(con))
+                                {
+                                    con = mContext.getResources().getString(R.string.pos_info_text);
+                                }
+                                msgDb.setMsgCon(con);
+                            } catch (Exception e) {
+                                msgDb.setMsgCon(e.toString());
+                            }
+
+                            msgDb.setMsgPos(pos);
+                        }
+
+                        msgDb.setRemark("");
+                        msgDb.setDelFlag(0);
+
+
+                    } else {
+                        //不符合协议
+                        msgDb.setMsgCon(Str[5]);
+                        msgDb.setMsgPos("");
+                        msgDb.setRemark("");
+                        msgDb.setDelFlag(0);
                     }
-                    catch(Exception e)
-                    {
-                        msgDb.setMsgCon(e.toString());
-                    }
 
-                    msgDb.setMsgPos(pos);
+                }
+                else
+                {
+                    //非混发和代码
+
                 }
 
-                msgDb.setRemark("");
-                msgDb.setDelFlag(0);
+                msgDb.save();
+//                        LogUtil.i(_id + " rcv msg saved");
 
-                long _id = msgDb.save();
-                LogUtil.i(_id+" saved");
+                //清空新消息标识
+                List<NewMsgCount_DB> nMsgList = NewMsgCount_DB.find(NewMsgCount_DB.class, "num_ID = ?",
+                        CommonUtil.Str2long(msgDb.getSendAddress())+"");
+                if(nMsgList.size() > 0)
+                {
+                    NewMsgCount_DB nMsg = nMsgList.get(0);
+                    nMsg.NumPlusOne();
+                    nMsg.save();
+                }
+                else
+                {
+                    NewMsgCount_DB nmsg = new NewMsgCount_DB();
+                    nmsg.setNumId(CommonUtil.Str2long(msgDb.getSendAddress()));
+                    nmsg.setBdNum(msgDb.getSendAddress());
+                    nmsg.NumPlusOne();
 
-            }
-            catch(Exception e)
-            {
+                    nmsg.save();
+                }
+
+
+                RingNotice();
+
+                return msgDb;
+            } catch (Exception e) {
                 LogUtil.e(e.toString());
+                return e.toString();
             }
-
-            return msgDb;
-
-
-//            if(globalData.getAppWorkType() == MORE_REPORT&&Str[5].contains("SJXX"))
-//            {
-//                globalData.setTimeOfRcv(globalData.getTimeOfRcv()+1);
-//            }
-//            //插入短信息数据表
-//            new Insert(mContext).insertSMS(SMS_RECEIVE, Str[2], globalData.getLocalID(), Str[4], Str[5], "");
-//            globalData.addNewSmsId(Str[2]);
-//            globalData.setToastStr("收到一条来自 "+ Str[2] + " 的短消息");
-//
-//            if(!Str[5].startsWith("回置信息"))
-//            {
-//                delaySendSms(Str[2], 0);
-//            }
         }
+
 
         //判断回执信息
         else if(checkStr[1].equals("$BDHZR"))
@@ -575,9 +572,13 @@ public class BufferHandle implements FinalDatas{
 
 //            globalData.setRnssVelocity(Double.valueOf(Str[7])*0.514+"");
 
-                MyPosition.getInstance().setMyLon(GpsData.formatSerialRnssPos(Str[5], 0));
-                MyPosition.getInstance().setMyLat(GpsData.formatSerialRnssPos(Str[3], 0));
-                MyPosition.getInstance().setMyDir(CommonUtil.Str2float(Str[8]));
+                if(SettingSharedPreference.getDataInt(mContext,LOCATION_TYPE_FLAG) == 0)
+                {
+                    MyPosition.getInstance().setMyLon(GpsData.formatSerialRnssPos(Str[5], 0));
+                    MyPosition.getInstance().setMyLat(GpsData.formatSerialRnssPos(Str[3], 0));
+                    MyPosition.getInstance().setMyDir(CommonUtil.Str2float(Str[8]));
+                }
+
             }
             catch(Exception e)
             {
@@ -669,5 +670,37 @@ public class BufferHandle implements FinalDatas{
         }
 
         return null;
+    }
+
+    /**
+     * 铃声+振动播放方法
+     * @return
+     * @throws Exception
+     * @throws IOException
+     */
+    public MediaPlayer RingNotice() throws Exception, IOException {
+        if (SettingSharedPreference.getDataInt(mContext, VIBRATION_FLAG) == 0) {
+            Vibrator vib = (Vibrator) mContext.getSystemService(Service.VIBRATOR_SERVICE);
+            vib.vibrate(800);
+        }
+        if (SettingSharedPreference.getDataInt(mContext, RING_FLAG) == 0) {
+            Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            MediaPlayer player = new MediaPlayer();
+            player.setDataSource(mContext, alert);
+            final AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION) != 0) {
+                player.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+                player.setLooping(false);
+
+                player.prepare();
+
+                player.start();
+
+            }
+
+            return player;
+        } else {
+            return null;
+        }
     }
 }

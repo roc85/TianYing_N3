@@ -4,14 +4,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_default"
     tools:context="com.xyxl.tianyingn3.ui.activities.BluetoothActivity">
+
+
+
+    <RelativeLayout
+        android:id="@+id/btTitle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/fragment_home_back">
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/bluetooth"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/imageBack"
+            android:layout_width="11dp"
+            android:layout_height="19dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            app:srcCompat="@drawable/div_mine_back" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/switchbox"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/btTitle"
+        android:layout_marginTop="10dp"
+        android:background="@color/white">
 
         <Switch
             android:id="@+id/switchBt"
@@ -29,32 +60,72 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
             android:text="@string/bt_onoff"
-            android:textSize="18sp" />
+            android:textColor="@color/black"
+            android:textSize="16sp" />
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/connectedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchbox"
+        android:layout_marginTop="15dp">
+
+        <TextView
+            android:id="@+id/textConnectFlag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:text="@string/connected_to"
+            android:textColor="@color/info_text"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/connectedInfoBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textConnectFlag"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/device_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="24dp" />
+
+            <TextView
+                android:id="@+id/device_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="12dp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
     <TextView
-        android:id="@+id/textBtList"
+        android:id="@+id/scanDeviceFlag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/connectedBox"
         android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
         android:text="@string/bt_device_list"
-        android:layout_alignBaseline="@+id/btnBtSearch"
-        android:layout_alignParentLeft="true"
-        android:layout_centerHorizontal="true" />
+        android:textColor="@color/info_text"
+        android:textSize="12sp" />
 
     <ListView
         android:id="@+id/btDeviceList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/btnBtSearch" />
+        android:layout_below="@+id/scanDeviceFlag"
+        android:layout_marginTop="15dp" />
 
-    <Button
-        android:id="@+id/btnBtSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/switchbox"
-        android:layout_margin="5dp"
-        android:text="@string/bt_device_search" />
 </RelativeLayout>

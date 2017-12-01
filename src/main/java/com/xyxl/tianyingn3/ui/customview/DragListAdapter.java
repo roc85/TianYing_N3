@@ -134,6 +134,9 @@ public class DragListAdapter extends ArrayAdapter<String> implements FinalDatas 
                 .findViewById(R.id.drag_list_item_text);
         viewHolder.checkShow = (CheckBox) convertView
                 .findViewById(R.id.checkShowBtn);
+
+        viewHolder.imgIcon.setVisibility(View.INVISIBLE);
+
         viewHolder.checkShow.setTag(btnList.get(position));
         viewHolder.checkShow.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

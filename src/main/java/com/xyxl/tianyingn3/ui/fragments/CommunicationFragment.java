@@ -1,16 +1,20 @@
 package com.xyxl.tianyingn3.ui.fragments;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +24,9 @@ import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.bean.BtConnectInfo;
 import com.xyxl.tianyingn3.bluetooth.BTDeviceInfos;
+import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
+import com.xyxl.tianyingn3.global.App;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.FinalDatas;
 import com.xyxl.tianyingn3.logs.LogUtil;
@@ -29,6 +35,7 @@ import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
 import com.xyxl.tianyingn3.ui.customview.TotalMsgAdapter;
 import com.xyxl.tianyingn3.util.CommonUtil;
 
+import java.io.PipedInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +55,9 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
     //
     private List<Message_DB> totalMsgDatas = new ArrayList<Message_DB>();
     private TotalMsgAdapter totalMsgAdapter;
+
+    private int choosePosition;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
@@ -82,7 +92,7 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
         tvNoMsg = (TextView)view.findViewById(R.id.textNoMsg);
         totalMsgList = (ListView)view.findViewById(R.id.msgTotalList);
         newMsg = (FloatingActionButton)view.findViewById(R.id.floatingNewMsg);
-
+        newMsg.setVisibility(View.GONE);
         newMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,8 +127,74 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
                 startActivity(intent);
             }
         });
+
+        totalMsgList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                choosePosition = position;
+                ShowDelDialog();
+                return true;
+            }
+        });
     }
 
+    public void ShowDelDialog() {
+        //*******************************//
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View view = View.inflate(getActivity(), R.layout.dialog_confirm, null);
+        TextView tvTitle = (TextView)view.findViewById(R.id.textTitle);
+        tvTitle.setText("是否删除该会话");
+        final Button btnOk = (Button) view.findViewById(R.id.buttonOk);
+        final Button btnEsc = (Button) view.findViewById(R.id.buttonEsc);
+
+        builder.setView(view);
+        final Dialog dialog = builder.create();
+        dialog.show();
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String num = "";
+                if (totalMsgDatas.get(choosePosition).getMsgType() == 0) {
+                    num = totalMsgDatas.get(choosePosition).getRcvAddress();
+                } else if (totalMsgDatas.get(choosePosition).getMsgType() == 1) {
+                    num = totalMsgDatas.get(choosePosition).getSendAddress();
+                }
+
+                List<Message_DB> chatDatas = Message_DB.find(Message_DB.class,
+                        "del_Flag = ? AND " +
+                                "(( send_Address = ? AND rcv_Address = ? AND msg_Type = ? ) OR (send_Address = ? AND rcv_Address = ? AND msg_Type = ?))",
+                        new String[]{"0",BdCardBean.getInstance().getIdNum(),num,"0",num,BdCardBean.getInstance().getIdNum() ,"1"},
+                        null,"msg_Time",null);
+                for(int i=0;i<chatDatas.size();i++)
+                {
+                    Message_DB msg = chatDatas.get(i);
+                    msg.setDelFlag(1);
+                    msg.save();
+                }
+
+                initData();
+
+                if(totalMsgDatas.size() == 0)
+                {
+                    tvNoMsg.setVisibility(View.VISIBLE);
+                }
+                else if(totalMsgDatas.size() > 0)
+                {
+                    tvNoMsg.setVisibility(View.GONE);
+                }
+                totalMsgList.setAdapter(totalMsgAdapter);
+                dialog.dismiss();
+            }
+        });
+        btnEsc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
     private void initData() {
         try
         {
@@ -131,8 +207,9 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
             {
 
             }
-            List<Message_DB> msgDatas = Message_DB.find(Message_DB.class,"send_Address = ? OR rcv_Address = ?",
-                    new String[]{myCardNum, myCardNum},
+            List<Message_DB> msgDatas = Message_DB.find(Message_DB.class,
+                    "del_Flag = ? AND ( send_Address = ? OR rcv_Address = ?)",
+                    new String[]{"0",myCardNum, myCardNum},
                     null,"msg_Time desc",null);
 
             List<String> nameList = new ArrayList<String>();
@@ -234,7 +311,7 @@ public class CommunicationFragment extends Fragment implements FinalDatas {
     public void setContent(Message_DB data) {
         initData();
         LogUtil.i("comm rcv");
-        CommonUtil.ShowToast(getActivity(),"comm rcv" );
+//        CommonUtil.ShowToast(getActivity(),"comm rcv" );
         if(totalMsgDatas.size() == 0)
         {
             tvNoMsg.setVisibility(View.VISIBLE);

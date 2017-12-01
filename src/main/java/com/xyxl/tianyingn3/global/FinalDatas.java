@@ -23,19 +23,28 @@ public interface FinalDatas {
     //预制消息最大数目
     public static final int SAVED_MSG_MAX = 5;
 
+    //北斗服务器中心号码
+    public static final String BD_SERVICE_NUM = "bd_service_num";
+
+    /****1-关闭 0-开启**********************************/
     //振动提醒开关
     public static final String VIBRATION_FLAG = "vibration_flag";
     //铃声提醒开关
     public static final String RING_FLAG = "ring_flag";
     //通知栏提醒开关
     public static final String NOTICE_BAR_FLAG = "notice_bar_flag";
-    //定位方式参数
+    //首页新消息通知提醒开关
+    public static final String NOTICE_HOME_MSG_FLAG = "notice_home_msg_flag";
+    //首页设备通知提醒开关
+    public static final String NOTICE_HOME_DEVICE_FLAG = "notice_home_device_flag";
+    //定位方式参数 0-设备 1-手机
     public static final String LOCATION_TYPE_FLAG = "location_type_flag";
+
     /********************************************************************/
     //蓝牙默认连接失败最大次数
     public static final int BT_AUTO_CONNECT_MAX_TIME = 5;
 
     //快捷功能
-    public static final String[] HOME_BTNS_INFOS = {"新建报文", "新建联系人", "设备管理", "提醒设置", "快捷登录"};
+    public static final String[] HOME_BTNS_INFOS = {"新建报文", "新建联系人", "设备管理", "提醒设置", "地图管理"};
     public static final String HOME_BTNS_FLAG = "homeBtnsFlag";
 }

@@ -143,16 +143,16 @@ public class ContactFragment extends Fragment implements FinalDatas {
         });
 
         //添加联系人按钮
-        ivAddContact = (ImageView)view.findViewById(R.id.addContact);
-        ivAddContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(getActivity(), NewContactActivity.class);
-                startActivity(intent);
-
-            }
-        });
+//        ivAddContact = (ImageView)view.findViewById(R.id.addContact);
+//        ivAddContact.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                Intent intent = new Intent(getActivity(), NewContactActivity.class);
+//                startActivity(intent);
+//
+//            }
+//        });
     }
 
 

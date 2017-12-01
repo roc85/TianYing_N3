@@ -2,24 +2,474 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_default">
 
     <RelativeLayout
+        android:id="@+id/setTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="50dp"
+        android:background="@color/fragment_home_back">
+
+        <TextView
+            android:id="@+id/textSet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:text="@string/setting"
+            android:textColor="@color/choose_text_color"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/me"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/userLoginBox"
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/setTitle"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/imageSetHead"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            app:srcCompat="@mipmap/ic_launcher_round" />
+
+        <ImageView
+            android:id="@+id/imageQRCode"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+
+            android:layout_marginRight="25dp"
+            app:srcCompat="@drawable/mine_icon_qrcode" />
+
+        <LinearLayout
+            android:id="@+id/loginedBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/imageSetHead"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textUserName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="TextView"
+                android:textColor="@color/user_name_text"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textUserInfos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="TextView"
+                android:textColor="@color/user_info_text"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/logAndRegBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/imageSetHead"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/textLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="6dp"
+                android:layout_weight="1"
+                android:text="@string/title_login"
+                android:textColor="@color/choose_text_color"
+                android:textSize="16sp" />
+
+            <RelativeLayout
+                android:id="@+id/lrLine"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/info_text">
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/textRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_weight="1"
+                android:text="@string/title_register"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <ScrollView
+        android:id="@+id/scrollSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userLoginBox"
+        android:layout_marginTop="15dp">
+
+        <LinearLayout
+            android:id="@+id/settingBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btSetting"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/imageBtArrow"
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="13dp"
+                    app:srcCompat="@drawable/mine_list_icon_right" />
+
+                <ImageView
+                    android:id="@+id/imageBtSet"
+                    android:layout_width="12dp"
+                    android:layout_height="23dp"
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginLeft="20dp"
+                    app:srcCompat="@drawable/detail_icon_bluetooth_open" />
+
+                <TextView
+                    android:id="@+id/textBtSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="44dp"
+                    android:text="@string/bluetooth"
+                    android:textColor="#ff1b1b1b"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/noticeSetting"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/imageNoticeArrow"
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="13dp"
+                    app:srcCompat="@drawable/mine_list_icon_right" />
+
+                <ImageView
+                    android:id="@+id/imageNoticeSet"
+                    android:layout_width="20dp"
+                    android:layout_height="19dp"
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginLeft="16dp"
+                    app:srcCompat="@drawable/mine_list_icon_notice_setting" />
+
+                <TextView
+                    android:id="@+id/textNoticeSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="44dp"
+                    android:text="@string/notice_set"
+                    android:textColor="#ff1b1b1b"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/msgSetting"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/imageMsgArrow"
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="13dp"
+                    app:srcCompat="@drawable/mine_list_icon_right"/>
+
+                <ImageView
+                    android:id="@+id/imageMsgSet"
+                    android:layout_width="19dp"
+                    android:layout_height="17dp"
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginLeft="16dp"
+                    app:srcCompat="@drawable/mine_list_icon_shouye_notice_setting" />
+
+                <TextView
+                    android:id="@+id/textMsgSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="44dp"
+                    android:text="@string/msg_set"
+                    android:textColor="#ff1b1b1b"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/msgSavedSetting"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/imageMsgSavedArrow"
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="13dp"
+                    app:srcCompat="@drawable/mine_list_icon_right"/>
+
+                <ImageView
+                    android:id="@+id/imageMsgSavedSet"
+                    android:layout_width="19dp"
+                    android:layout_height="17dp"
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginLeft="16dp"
+                    app:srcCompat="@drawable/mine_list_icon_shouye_notice_setting" />
+
+                <TextView
+                    android:id="@+id/textMsgSavedSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="44dp"
+                    android:text="@string/msg_saved_set"
+                    android:textColor="#ff1b1b1b"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/mapSetting"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/imageMapArrow"
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="13dp"
+                    app:srcCompat="@drawable/mine_list_icon_right" />
+
+                <ImageView
+                    android:id="@+id/imageMapSet"
+                    android:layout_width="17dp"
+                    android:layout_height="19dp"
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginLeft="17dp"
+                    app:srcCompat="@drawable/mine_list_icon_map_setting" />
+
+                <TextView
+                    android:id="@+id/textMapSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="44dp"
+                    android:text="@string/map_set"
+                    android:textColor="#ff1b1b1b"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/locSetting"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/imageLocArrow"
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="13dp"
+                    app:srcCompat="@drawable/mine_list_icon_right" />
+
+                <ImageView
+                    android:id="@+id/imageLocSet"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginLeft="15dp"
+                    app:srcCompat="@drawable/mine_list_icon_location_setting" />
+
+                <TextView
+                    android:id="@+id/textLocSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="44dp"
+                    android:text="@string/location_set"
+                    android:textColor="#ff1b1b1b"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/datasSetting"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@color/white">
+
+                <ImageView
+                    android:id="@+id/imageDatasArrow"
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="13dp"
+                    app:srcCompat="@drawable/mine_list_icon_right"/>
+
+                <ImageView
+                    android:id="@+id/imageDatasSet"
+                    android:layout_width="18dp"
+                    android:layout_height="16dp"
+                    android:layout_centerVertical="true"
+
+                    android:layout_marginLeft="17dp"
+                    app:srcCompat="@drawable/mine_list_icon_data_manage_setting" />
+
+                <TextView
+                    android:id="@+id/textDatasSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="44dp"
+                    android:text="@string/datas_set"
+                    android:textColor="#ff1b1b1b"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/item_line">
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+
+
+
+    <!--**************************************************************************-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/userLoginBox"
+        android:visibility="gone">
 
         <RelativeLayout
             android:id="@+id/userBox"
             android:layout_width="match_parent"
             android:layout_height="120dp">
-
-            <ImageView
-                android:id="@+id/imageSetHead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                app:srcCompat="@mipmap/ic_launcher_round" />
 
             <TextView
                 android:id="@+id/textSetName"
@@ -27,7 +477,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
-                android:layout_toEndOf="@+id/imageSetHead"
                 android:text="@string/login_or_register"
                 android:textSize="24sp" />
         </RelativeLayout>
@@ -99,72 +548,4 @@
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button"
-        android:layout_alignBottom="@+id/button"
-        android:layout_alignEnd="@+id/scrollView2"
-        android:text="TextView"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="22dp"
-        android:text="通信测试"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="11dp"
-        android:text="发送报文"
-        android:visibility="gone" />
-
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/button"
-        android:layout_margin="15dp"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/textInfos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/button"
-                android:layout_alignBottom="@+id/button"
-                android:layout_marginStart="23dp"
-                android:layout_toEndOf="@+id/button"
-                android:text="TextView"
-                android:visibility="gone" />
-        </LinearLayout>
-    </ScrollView>
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/scrollView2"
-        android:layout_marginStart="14dp"
-        android:layout_toEndOf="@+id/button"
-        android:text="蓝牙连接"
-        android:visibility="gone" />
 </RelativeLayout>

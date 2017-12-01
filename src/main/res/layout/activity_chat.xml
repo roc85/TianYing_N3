@@ -7,31 +7,44 @@
     tools:context="com.xyxl.tianyingn3.ui.activities.ChatActivity">
 
 
+    <Chronometer
+        android:id="@+id/chatTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/titleBox"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:background="@color/cornflowerblue">
+        android:background="@color/dialog_back">
 
-        <ImageView
-            android:id="@+id/imageInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            app:srcCompat="@android:drawable/ic_menu_info_details" />
+        <RelativeLayout
+            android:id="@+id/backChatBox"
+            android:layout_width="50dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:visibility="gone"
+                app:srcCompat="@android:drawable/ic_menu_info_details" />
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/imageBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="11dp"
+            android:layout_height="19dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+            android:layout_marginLeft="13dp"
+            app:srcCompat="@drawable/div_mine_back" />
 
         <LinearLayout
             android:id="@+id/userInfos"
@@ -46,6 +59,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
+                android:visibility="gone"
                 app:srcCompat="@mipmap/ic_launcher_round" />
 
             <TextView
@@ -53,127 +67,166 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="TextView"
-                android:textColor="@color/white"
+                android:textColor="#fffefffe"
                 android:textSize="18sp" />
 
         </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/inputBox"
+    <RelativeLayout
+        android:id="@+id/addSendBox"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:background="@color/cornflowerblue"
-        android:orientation="vertical">
+        android:background="@color/message_box_back">
 
-        <RelativeLayout
-            android:id="@+id/textInputBox"
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
+        <Switch
+            android:id="@+id/switchPosSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp" />
 
+        <ImageView
+            android:id="@+id/imageposFlag"
+            android:layout_width="12dp"
+            android:layout_height="15dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="14dp"
+            app:srcCompat="@drawable/dialogue_under_icon_location" />
 
-            <ImageView
-                android:id="@+id/imageSendType"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                app:srcCompat="@android:drawable/ic_dialog_dialer" />
-
-            <ImageView
-                android:id="@+id/imageAddInput"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@id/imageSendType"
-                app:srcCompat="@android:drawable/ic_input_add" />
-
-            <Button
-                android:id="@+id/btnSend"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:text="@string/send_msg"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
-
-
-            <EditText
-                android:id="@+id/editInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@id/btnSend"
-                android:layout_toRightOf="@id/imageAddInput"
-                android:imeOptions="actionSend"
-                android:ems="10"
-                android:inputType="text"
-                android:text=""
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/addInputBox"
-            android:layout_width="match_parent"
-            android:layout_height="100dp">
-
-            <Switch
-                android:id="@+id/switchSendPos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:checked="false"
-                android:splitTrack="false"
-                android:text="@string/pos_info"
-                android:textColor="@color/white" />
+        <LinearLayout
+            android:id="@+id/posInfoBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="7dp"
+            android:layout_toRightOf="@id/imageposFlag"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textPos"
-                android:layout_width="wrap_content"
+                android:id="@+id/textposFlag"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/switchSendPos"
-                android:layout_alignBottom="@+id/switchSendPos"
-                android:layout_alignParentStart="true"
-                android:text=""
-                android:textColor="@color/white" />
+                android:text="附加位置信息"
+                android:textColor="#ff353535"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textPosInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#ff636363"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/addLine0"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/input_box_back">
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/inputConBox"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_above="@id/addSendBox"
+        android:background="@color/message_box_back">
+
+
+        <RelativeLayout
+            android:id="@+id/addLine1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/input_box_back">
+
         </RelativeLayout>
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/imageDeviceSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            app:srcCompat="@drawable/device_send_icon" />
+
+        <ImageView
+            android:id="@+id/imagePhoneSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            android:layout_toRightOf="@id/imageDeviceSend"
+            app:srcCompat="@drawable/phone_send_icon" />
+
+        <ImageView
+            android:id="@+id/imageAddInputSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="13dp"
+            app:srcCompat="@drawable/keyboard_icon_add" />
+
+
+        <EditText
+            android:id="@+id/editConMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="13dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@id/imageAddInputSend"
+            android:layout_toRightOf="@id/imagePhoneSend"
+            android:background="@drawable/input_con_round_back"
+            android:ems="10"
+            android:hint="@string/send_to_device"
+            android:imeOptions="actionSend"
+            android:inputType="text"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
 
 
     <ListView
         android:id="@+id/msgLists"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/inputBox"
+        android:layout_above="@+id/inputConBox"
         android:layout_below="@+id/titleBox"
-        android:background="@color/aliceblue"
+        android:background="@color/background_default"
         android:divider="@color/black"
         android:dividerHeight="0dp"
         android:padding="10dp"
         android:visibility="visible" />
 
 
+
     <TextView
         android:id="@+id/textAddInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/inputBox"
+        android:layout_above="@id/inputConBox"
+        android:textSize="16sp"
+        android:padding="3dp"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
-        android:text="00/00" />
+        android:text="0/0" />
 
 </RelativeLayout>

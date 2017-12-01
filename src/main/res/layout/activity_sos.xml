@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fragment_home_back"
     tools:context="com.xyxl.tianyingn3.ui.activities.SosActivity">
 
     <ImageView
@@ -13,7 +13,7 @@
         android:layout_height="200dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        app:srcCompat="@drawable/background_compass" />
+        app:srcCompat="@drawable/sos" />
 
     <TextView
         android:id="@+id/textSos"
@@ -22,5 +22,7 @@
         android:layout_below="@+id/imageSos"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="56dp"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 </RelativeLayout>

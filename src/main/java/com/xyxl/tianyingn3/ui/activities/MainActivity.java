@@ -13,17 +13,22 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.otto.Subscribe;
 import com.xyxl.tianyingn3.R;
+import com.xyxl.tianyingn3.bluetooth.BTDeviceInfos;
 import com.xyxl.tianyingn3.bluetooth.BluetoothService;
 import com.xyxl.tianyingn3.bluetooth.BtSendDatas;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Msg_DB;
+import com.xyxl.tianyingn3.database.NewMsgCount_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.AppBus;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;
@@ -35,6 +40,9 @@ import com.xyxl.tianyingn3.ui.fragments.HomeFragment;
 import com.xyxl.tianyingn3.ui.fragments.MapFragment;
 import com.xyxl.tianyingn3.ui.fragments.MessageFragment;
 import com.xyxl.tianyingn3.ui.fragments.SettingFragment;
+import com.xyxl.tianyingn3.util.DataUtil;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -62,7 +70,7 @@ public class MainActivity extends BaseActivity {
     private RelativeLayout setBox;
     private RelativeLayout buttomNaviBox;
     private FrameLayout fragmentsBox;
-
+    private TextView tvNewMsg;
     //Fragments
     private HomeFragment homeFragment;
     private MessageFragment messageFragment;
@@ -76,6 +84,10 @@ public class MainActivity extends BaseActivity {
 
     //蓝牙服务相关
     private BluetoothService myService;
+
+    //UI界面相关参数
+    private float sDpi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +98,8 @@ public class MainActivity extends BaseActivity {
         initData();
         initView();
         initListener();
+
+        ShowNewMsgNum();
 
         //获取权限
         if (isMarshmallow()) {
@@ -160,6 +174,7 @@ public class MainActivity extends BaseActivity {
         //开启蓝牙服务
         Intent gattServiceIntent = new Intent(this, BluetoothService.class);
         boolean m = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
         if(!m)
         {
             LogUtil.e( getResources().getString(R.string.bt_service_open_failed) );
@@ -183,10 +198,59 @@ public class MainActivity extends BaseActivity {
         setBox = (RelativeLayout) findViewById(R.id.setBox);
         buttomNaviBox = (RelativeLayout) findViewById(R.id.buttomNaviBox);
         fragmentsBox = (FrameLayout) findViewById(R.id.fragmentsBox);
-
+        tvNewMsg = (TextView) findViewById(R.id.textNewMsg);
+        tvNewMsg.setVisibility(View.INVISIBLE);
         //控件设置
-        homeText.setTextColor(getResources().getColor(R.color.red));
+        sDpi = getScreenDpi();
+
+        homeText.setTextColor(getResources().getColor(R.color.choose_text_color));
+        homeText.setTextSize(10);
+        msgText.setTextColor(getResources().getColor(R.color.white));
+        msgText.setTextSize(10);
+        mapText.setTextColor(getResources().getColor(R.color.white));
+        mapText.setTextSize(10);
+        setText.setTextColor(getResources().getColor(R.color.white));
+        setText.setTextSize(10);
+        homeImg.setSelected(true);
+        msgImg.setSelected(false);
+        mapImg.setSelected(false);
+        setImg.setSelected(false);
+
+        RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getMyDpHeight(48));
+        relativeParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        buttomNaviBox.setLayoutParams(relativeParams);
+
+        RelativeLayout.LayoutParams btnParams = new RelativeLayout.LayoutParams(getMyDpWidth(23.5f), getMyDpHeight(22f));
+        btnParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        btnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        btnParams.setMargins(0,getMyDpHeight(6),0,getMyDpHeight(5.5f));
+        homeImg.setLayoutParams(btnParams);
+        btnParams = new RelativeLayout.LayoutParams(getMyDpWidth(24f), getMyDpHeight(24f));
+        btnParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        btnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        btnParams.setMargins(0,getMyDpHeight(5),0,getMyDpHeight(4f));
+
+        msgImg.setLayoutParams(btnParams);
+        btnParams = new RelativeLayout.LayoutParams(getMyDpWidth(18.5f), getMyDpHeight(23.5f));
+        btnParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        btnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        btnParams.setMargins(0,getMyDpHeight(5),0,getMyDpHeight(4.5f));
+        mapImg.setLayoutParams(btnParams);
+        btnParams = new RelativeLayout.LayoutParams(getMyDpWidth(20f), getMyDpHeight(24f));
+        btnParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        btnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        btnParams.setMargins(0,getMyDpHeight(5),0,getMyDpHeight(3.5f));
+        setImg.setLayoutParams(btnParams);
+
+        btnParams = new RelativeLayout.LayoutParams(getMyDpWidth(58.5f), getMyDpHeight(58.5f));
+        btnParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        btnParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        btnParams.setMargins(0,0,0,getMyDpHeight(6.5f));
+        sosImgBtn.setLayoutParams(btnParams);
+
+
     }
+
 
 
     private void initListener() {
@@ -194,12 +258,15 @@ public class MainActivity extends BaseActivity {
         homeBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                homeText.setTextColor(getResources().getColor(R.color.red));
-                msgText.setTextColor(getResources().getColor(R.color.black));
-                mapText.setTextColor(getResources().getColor(R.color.black));
-                setText.setTextColor(getResources().getColor(R.color.black));
+                homeText.setTextColor(getResources().getColor(R.color.choose_text_color));
+                msgText.setTextColor(getResources().getColor(R.color.white));
+                mapText.setTextColor(getResources().getColor(R.color.white));
+                setText.setTextColor(getResources().getColor(R.color.white));
                 Turn2Fragment(0);
-
+                homeImg.setSelected(true);
+                msgImg.setSelected(false);
+                mapImg.setSelected(false);
+                setImg.setSelected(false);
 //                AppBus.getInstance().post(new BtSendDatas(0, BdSdk_v2_1.BD_SendICA(0, 0),null));
 
 
@@ -222,32 +289,47 @@ public class MainActivity extends BaseActivity {
         msgBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msgText.setTextColor(getResources().getColor(R.color.red));
-                homeText.setTextColor(getResources().getColor(R.color.black));
-                mapText.setTextColor(getResources().getColor(R.color.black));
-                setText.setTextColor(getResources().getColor(R.color.black));
+                msgText.setTextColor(getResources().getColor(R.color.choose_text_color));
+                homeText.setTextColor(getResources().getColor(R.color.white));
+                mapText.setTextColor(getResources().getColor(R.color.white));
+                setText.setTextColor(getResources().getColor(R.color.white));
                 Turn2Fragment(1);
+
+                homeImg.setSelected(false);
+                msgImg.setSelected(true);
+                mapImg.setSelected(false);
+                setImg.setSelected(false);
 
             }
         });
         mapBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mapText.setTextColor(getResources().getColor(R.color.red));
-                homeText.setTextColor(getResources().getColor(R.color.black));
-                msgText.setTextColor(getResources().getColor(R.color.black));
-                setText.setTextColor(getResources().getColor(R.color.black));
+                mapText.setTextColor(getResources().getColor(R.color.choose_text_color));
+                homeText.setTextColor(getResources().getColor(R.color.white));
+                msgText.setTextColor(getResources().getColor(R.color.white));
+                setText.setTextColor(getResources().getColor(R.color.white));
                 Turn2Fragment(2);
+
+                homeImg.setSelected(false);
+                msgImg.setSelected(false);
+                mapImg.setSelected(true);
+                setImg.setSelected(false);
             }
         });
         setBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setText.setTextColor(getResources().getColor(R.color.red));
-                homeText.setTextColor(getResources().getColor(R.color.black));
-                mapText.setTextColor(getResources().getColor(R.color.black));
-                msgText.setTextColor(getResources().getColor(R.color.black));
+                setText.setTextColor(getResources().getColor(R.color.choose_text_color));
+                homeText.setTextColor(getResources().getColor(R.color.white));
+                mapText.setTextColor(getResources().getColor(R.color.white));
+                msgText.setTextColor(getResources().getColor(R.color.white));
                 Turn2Fragment(3);
+
+                homeImg.setSelected(false);
+                msgImg.setSelected(false);
+                mapImg.setSelected(false);
+                setImg.setSelected(true);
             }
         });
 
@@ -255,7 +337,8 @@ public class MainActivity extends BaseActivity {
         sosBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                OpenActivity(false,BluetoothActivity.class);
+
+                OpenActivity(false,SosActivity.class);
             }
         });
     }
@@ -306,10 +389,53 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         // TODO Auto-generated method stub
+
+        unbindService(mServiceConnection);
+
 		Intent mIntent=new Intent(MainActivity.this,MainService.class);
         stopService(mIntent);
 
-        unbindService(mServiceConnection);
         super.onDestroy();
+    }
+
+    private void ShowNewMsgNum()
+    {
+        List<NewMsgCount_DB> listNew = NewMsgCount_DB.listAll(NewMsgCount_DB.class);
+        int num = 0;
+        for(int i=0;i<listNew.size();i++)
+        {
+            num+=listNew.get(i).getNum();
+        }
+        if(num>0)
+        {
+            tvNewMsg.setVisibility(View.VISIBLE);
+            tvNewMsg.setText(num+"");
+        }
+        else
+        {
+            tvNewMsg.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * 定义订阅者
+     */
+    @Subscribe
+    public void setContent(NewMsgCount_DB data) {
+//        ShowToast("rcv_msg");
+        ShowNewMsgNum();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //注册到bus事件总线中
+        AppBus.getInstance().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AppBus.getInstance().unregister(this);
     }
 }

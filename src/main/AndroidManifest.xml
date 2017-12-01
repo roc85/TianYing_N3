@@ -76,6 +76,7 @@
     <uses-permission android:name="android.permission.ACCESS_GPS" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- OpenGLES 2.0 -->
     <uses-feature
@@ -91,6 +92,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
         <!-- 百度地图key -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
@@ -99,16 +110,16 @@
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote"></service>
+            android:process=":remote" />
 
         <!-- 注册蓝牙Service -->
         <service
             android:name=".bluetooth.BluetoothService"
-            class=".bluetooth.BluetoothService"></service>
+            class=".bluetooth.BluetoothService" />
         <!-- 注册MainService -->
         <service
             android:name=".service.MainService"
-            class=".service.MainService"></service>
+            class=".service.MainService" />
 
         <receiver android:name=".util.NotificationBroadcastReceiver">
             <intent-filter>
@@ -126,7 +137,8 @@
         </activity>
         <activity
             android:name=".ui.activities.LoginActivity"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".ui.activities.RegisterActivity" />
         <activity android:name=".ui.activities.BluetoothActivity" />
         <activity
@@ -146,7 +158,16 @@
             android:name=".ui.activities.NewContactActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".ui.activities.ContractInfoActivity" />
-        <activity android:name=".ui.activities.SetHomeBtnActivity"></activity>
+        <activity android:name=".ui.activities.SetHomeBtnActivity" />
+        <activity android:name=".ui.activities.TestActivity" />
+        <activity android:name=".ui.activities.NoticeSetActivity" />
+        <activity android:name=".ui.activities.MsgSetActivity" />
+        <activity android:name=".ui.activities.SavedMsgSetActivity" />
+        <activity android:name=".ui.activities.LocSetActivity" />
+        <activity android:name=".ui.activities.MapSetActivity" />
+        <activity android:name=".ui.activities.LocalDataSetActivity" />
+        <activity android:name=".ui.activities.QrCodeActivity" />
+        <activity android:name=".ui.activities.MySetActivity"></activity>
     </application>
 
 </manifest>

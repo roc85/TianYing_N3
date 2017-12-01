@@ -31,7 +31,8 @@ public class MainService extends Service{
 
     private FunctionThread functionThread;
     private long startAppTime;
-
+    //运行时间变量
+    private long timeStart , timeSendingRun , timeNeedPower;
     //通知栏相关
     private NotificationCompat.Builder mBuilder;
     private int     				   notifyId;
@@ -62,7 +63,7 @@ public class MainService extends Service{
     public void onDestroy() {
         super.onDestroy();
         // 初始化通知栏
-//        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancelAll();
         LogUtil.e("onDestroy");
         App.finishAllActivity();
@@ -71,6 +72,9 @@ public class MainService extends Service{
     private void initService()
     {
         //初始化服务方法
+
+        //计时开始
+        timeStart=System.currentTimeMillis();
 
         //初始化通知栏
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

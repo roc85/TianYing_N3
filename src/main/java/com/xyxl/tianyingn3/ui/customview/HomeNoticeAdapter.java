@@ -80,6 +80,8 @@ public class HomeNoticeAdapter extends BaseAdapter implements FinalDatas {
 //            viewHolder = (ViewHolder) convertView.getTag();
 //        }
 
+        viewHolder.tvType.setTextSize(13);
+        viewHolder.tvType.setTextColor(0xff878787);
         if(entity.getNoticeType() == 0)
         {
             viewHolder.tvType.setText("新消息");
@@ -91,8 +93,12 @@ public class HomeNoticeAdapter extends BaseAdapter implements FinalDatas {
 
         }
 
+        viewHolder.tvTime.setTextSize(13);
+        viewHolder.tvTime.setTextColor(0xff878787);
         viewHolder.tvTime.setText(TimeUtil.formatFriendly(new Date(entity.getNoticeTime())));
 
+        viewHolder.tvCon.setTextSize(15);
+        viewHolder.tvCon.setTextColor(0xffc1c1c1);
         viewHolder.tvCon.setText(entity.getNoticeCon());
 
         return convertView;

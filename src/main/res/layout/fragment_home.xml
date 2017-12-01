@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fragment_home_back"
     android:orientation="vertical">
 
 
@@ -12,26 +13,44 @@
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
-    <com.xyxl.tianyingn3.ui.customview.ClearEditText
-        android:id="@+id/searchHome"
+
+    <RelativeLayout
+        android:id="@+id/titleHomeBox"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:background="#bef9b81b"
-        android:drawableLeft="@drawable/search_bar_icon_normal"
-        android:hint="请输入关键字"
-        android:maxLines="1"
-        android:paddingLeft="8dp"
-        android:textSize="15dp" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageHomeRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/homepage_nav_icon_find" />
+
+        <ImageView
+            android:id="@+id/imageHomeLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/homepage_nav_icon_inform" />
+
+        <TextView
+            android:id="@+id/textHomeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/home"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:id="@+id/infosBox"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_below="@+id/searchHome"
-        android:layout_margin="2dp"
-        android:background="@drawable/btn_group_nor"
+        android:background="@drawable/home_round_rect_back"
         android:padding="2dp">
 
 
@@ -42,8 +61,12 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_margin="5dp"
-            android:padding="5dp"
-            app:srcCompat="@android:drawable/arrow_down_float" />
+            android:background="@color/choose_text_color"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            app:srcCompat="@drawable/homepage_button_detail_icon_arrow" />
 
         <com.xyxl.tianyingn3.ui.customview.CompassView
             android:id="@+id/compassView"
@@ -52,63 +75,48 @@
             android:layout_alignParentStart="true"
 
             android:layout_margin="5dp"
-            android:background="@drawable/background_compass"
             app:srcCompat="@drawable/compass" />
 
+
         <RelativeLayout
-            android:id="@+id/addInfoBox"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/compassView">
+            android:id="@+id/lineHomeInfo"
+            android:layout_width="1dp"
+            android:layout_height="91dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="30dp"
+            android:layout_toRightOf="@id/compassView"
+            android:background="@color/white">
 
-            <TextView
-                android:id="@+id/textbeams"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@mipmap/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                app:srcCompat="@mipmap/ic_launcher" />
         </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/infoLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_margin="20dp"
-            android:layout_toRightOf="@id/compassView"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/lineHomeInfo"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textBtConnect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/choose_text_color"
                 android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/textCardNum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/choose_text_color"
                 android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/textComLv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/choose_text_color"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -116,6 +124,93 @@
     </RelativeLayout>
 
 
+    <RelativeLayout
+        android:id="@+id/addInfoBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/compassView"
+        android:background="@drawable/home_round_rect_down">
+
+        <com.xyxl.tianyingn3.ui.customview.BeamsView
+            android:id="@+id/beamView"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <RelativeLayout
+            android:id="@+id/powerInfos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/beamView"
+            android:layout_centerHorizontal="true"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textPowerFlag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:text="@string/device_power"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/powerInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="--"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/runTimeInfos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/powerInfos"
+            android:layout_centerHorizontal="true"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/textTimeFlag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:text="@string/running_time"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/timeInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="--"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textbeams"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <GridLayout
+        android:id="@+id/fastBtnGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4">
+
+    </GridLayout>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -131,9 +226,11 @@
     <ListView
         android:id="@+id/homeList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="@color/ghostwhite"
+        android:dividerHeight="1dp"
+        android:divider="@color/fragment_home_back"
         android:visibility="visible" />
 
 </LinearLayout>

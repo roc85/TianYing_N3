@@ -6,34 +6,86 @@
     android:layout_height="match_parent"
     tools:context="com.xyxl.tianyingn3.ui.activities.ContractInfoActivity">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/addNew"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
-        android:clickable="true"
-        app:srcCompat="@android:drawable/ic_input_add" />
+
+
+    <RelativeLayout
+        android:id="@+id/newContactTitle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/fragment_home_back">
+
+        <ImageView
+            android:id="@+id/imageBack"
+            android:layout_width="11dp"
+            android:layout_height="19dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            app:srcCompat="@drawable/div_mine_back" />
+
+        <TextView
+            android:id="@+id/textSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:text="@string/save"
+            android:textColor="@color/choose_text_color"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/edit_new_contact"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/headEditBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/newContactTitle"
+        android:layout_marginLeft="19dp"
+        android:layout_marginTop="18dp"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/headBox"
-            android:layout_width="match_parent"
-            android:layout_height="200dp">
+        <ImageView
+            android:id="@+id/imageHead"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@mipmap/ic_launcher_round" />
 
-            <ImageView
-                android:id="@+id/imageHead"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                app:srcCompat="@mipmap/ic_launcher_round" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/textEditHead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="@string/edit"
+            android:textColor="#ff68e580"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/editInfoBox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/newContactTitle"
+        android:layout_marginLeft="17dp"
+        android:layout_toRightOf="@id/headEditBox"
+        android:orientation="vertical">
 
         <EditText
             android:id="@+id/editName"
@@ -76,4 +128,22 @@
             android:inputType="text" />
 
     </LinearLayout>
+
+
+
+
+
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/addNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:clickable="true"
+        android:visibility="gone"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
 </RelativeLayout>

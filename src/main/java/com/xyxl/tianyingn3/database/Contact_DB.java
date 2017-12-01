@@ -129,7 +129,27 @@ public class Contact_DB extends SugarRecord implements Serializable{
     public static long getIdViaAddress(String num)
     {
         num = BdCardBean.FormatCardNum(num);
-        List<Contact_DB> tmpList = Contact_DB.find(Contact_DB.class,"bd_Num = ?",num);
+        List<Contact_DB> tmpList = Contact_DB.find(Contact_DB.class,"bd_Num = ? ",num);
+        if(tmpList.size()>0)
+        {
+            return tmpList.get(0).getId();
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+    /**
+     * Gets id via phone.
+     *
+     * @param num the num
+     * @return the id via phone
+     */
+    public static long getIdViaPhone(String num)
+    {
+        num = BdCardBean.FormatCardNum(num);
+        List<Contact_DB> tmpList = Contact_DB.find(Contact_DB.class,"phone = ? ",num);
         if(tmpList.size()>0)
         {
             return tmpList.get(0).getId();

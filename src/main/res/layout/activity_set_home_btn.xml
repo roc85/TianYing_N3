@@ -24,21 +24,26 @@
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 
-        <ImageView
-            android:id="@+id/imageSave"
+
+        <TextView
+            android:id="@+id/textSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            app:srcCompat="@android:drawable/ic_menu_save" />
+            android:layout_marginRight="15dp"
+            android:text="@string/save"
+            android:textColor="@color/choose_text_color"
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/imageBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_width="11dp"
+            android:layout_height="19dp"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+            android:layout_marginLeft="13dp"
+            app:srcCompat="@drawable/div_mine_back" />
     </RelativeLayout>
 
     <com.xyxl.tianyingn3.ui.customview.DragListView

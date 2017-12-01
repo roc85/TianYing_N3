@@ -6,32 +6,239 @@
     android:layout_height="match_parent"
     tools:context="com.xyxl.tianyingn3.ui.activities.NewMsgActivity">
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="306631" />
 
-    <EditText
-        android:id="@+id/editText2"
+    <Chronometer
+        android:id="@+id/newMsgTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/editText"
-        android:layout_marginStart="11dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:visibility="gone" />
 
-    <Button
-        android:id="@+id/button3"
+    <RelativeLayout
+        android:id="@+id/addSendBox"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/message_box_back">
+
+        <Switch
+            android:id="@+id/switchPosSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp" />
+
+        <ImageView
+            android:id="@+id/imageposFlag"
+            android:layout_width="12dp"
+            android:layout_height="15dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="14dp"
+            app:srcCompat="@drawable/dialogue_under_icon_location" />
+
+        <LinearLayout
+            android:id="@+id/posInfoBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="7dp"
+            android:layout_toRightOf="@id/imageposFlag"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textposFlag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="附加位置信息"
+                android:textColor="#ff353535"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textPosInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#ff636363"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/addLine0"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/input_box_back">
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/inputConBox"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_above="@id/addSendBox"
+        android:background="@color/message_box_back">
+
+
+        <RelativeLayout
+            android:id="@+id/addLine1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/input_box_back">
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/imageDeviceSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            app:srcCompat="@drawable/device_send_icon" />
+
+        <ImageView
+            android:id="@+id/imagePhoneSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            android:layout_toRightOf="@id/imageDeviceSend"
+            app:srcCompat="@drawable/phone_send_icon" />
+
+        <ImageView
+            android:id="@+id/imageAddInputSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="13dp"
+            app:srcCompat="@drawable/keyboard_icon_add" />
+
+
+        <EditText
+            android:id="@+id/editConMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="13dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@id/imageAddInputSend"
+            android:layout_toRightOf="@id/imagePhoneSend"
+            android:background="@drawable/input_con_round_back"
+            android:ems="10"
+            android:hint="@string/send_to_device"
+            android:imeOptions="actionSend"
+            android:inputType="text"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text=""
+            android:textSize="15sp" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/newMsgTitle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/fragment_home_back">
+
+        <TextView
+            android:id="@+id/textSet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:text="@string/esc"
+            android:textColor="@color/choose_text_color"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/new_msg"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/inputContactBox"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@id/newMsgTitle"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/imageSearhContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            app:srcCompat="@drawable/create_massage_add_receiver" />
+
+
+        <TextView
+            android:id="@+id/textContactFlag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/send_to_contact"
+            android:textColor="@color/info_text"
+            android:textSize="16sp" />
+
+
+        <EditText
+            android:id="@+id/editContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toEndOf="@+id/textContactFlag"
+            android:background="@color/white"
+            android:ems="10"
+            android:hint="@string/input_rcv_contact"
+            android:inputType="number"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/line0newmsg"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/inputContactBox"
+        android:background="@color/item_line">
+
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/findContactList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/inputConBox"
+        android:layout_below="@+id/line0newmsg" />
+
+    <TextView
+        android:id="@+id/textAddInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/editText2"
-        android:layout_below="@+id/editText2"
-        android:text="Button" />
+        android:layout_above="@id/inputConBox"
+        android:textSize="16sp"
+        android:padding="3dp"
+        android:layout_alignParentRight="true"
+        android:text="0/0" />
 </RelativeLayout>

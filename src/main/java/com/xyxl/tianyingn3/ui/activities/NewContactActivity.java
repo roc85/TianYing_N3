@@ -1,9 +1,11 @@
 package com.xyxl.tianyingn3.ui.activities;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -19,6 +21,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -26,7 +29,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -41,6 +46,10 @@ import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.util.ImageUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -55,12 +64,14 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
     private Button btnAdd;
 
     private FloatingActionButton addNew;
-    private ImageView imageHead;
-    private RelativeLayout headBox;
+    private ImageView imageHead, ivBack;
+    private LinearLayout headBox;
     private EditText editName;
     private EditText editBdNum;
     private EditText editPhone;
     private EditText editRemark;
+
+    private TextView tvSave, tvEditHead;
 
     private static final int PHOTO_REQUEST_TAKEPHOTO = 1;// 拍照
     private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
@@ -94,8 +105,9 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
         addNew.setOnClickListener(this);
         imageHead = (ImageView) findViewById(R.id.imageHead);
         imageHead.setOnClickListener(this);
-        headBox = (RelativeLayout) findViewById(R.id.headBox);
+        headBox = (LinearLayout) findViewById(R.id.headEditBox);
         headBox.setOnClickListener(this);
+
         editName = (EditText) findViewById(R.id.editName);
         editName.setOnClickListener(this);
         editBdNum = (EditText) findViewById(R.id.editBdNum);
@@ -104,6 +116,12 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
         editPhone.setOnClickListener(this);
         editRemark = (EditText) findViewById(R.id.editRemark);
         editRemark.setOnClickListener(this);
+        tvSave = (TextView) findViewById(R.id.textSave);
+        tvSave.setOnClickListener(this);
+        tvEditHead = (TextView) findViewById(R.id.textEditHead);
+        tvEditHead.setOnClickListener(this);
+        ivBack = (ImageView) findViewById(R.id.imageBack);
+        ivBack.setOnClickListener(this);
 
         //新加陌生号码
         try
@@ -145,11 +163,20 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.addNew:
+            case R.id.textSave:
                 submit();
+                break;
+            case R.id.headEditBox:
+                showDialog();
                 break;
             case R.id.imageHead:
                 showDialog();
+                break;
+            case R.id.textEditHead:
+                showDialog();
+                break;
+            case R.id.imageBack:
+                finish();
                 break;
         }
     }
@@ -307,6 +334,11 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
         return Build.VERSION.SDK_INT >= 23;
     }
 
+    private boolean isNougat()
+    {
+        return Build.VERSION.SDK_INT >= 24;
+    }
+
     private void requestPosPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
@@ -318,7 +350,17 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
         {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // 指定调用相机拍照后照片的储存路径
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+
+//            Uri photoURI = FileProvider.getUriForFile(NewContactActivity.this, getApplicationContext().getPackageName() + ".provider", tempFile);
+            if (isNougat())
+            {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, getImageContentUri(tempFile));
+            }
+            else
+            {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+            }
+
             startActivityForResult(intent, PHOTO_REQUEST_TAKEPHOTO);
         }
     }
@@ -342,13 +384,49 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
         }
     }
 
+    /**
+     * 把 Bitmap 保存在SD卡路径后，返回file 类型的 uri
+     *
+     * @param bm
+     * @return
+     */
+    private Uri saveBitmap(Bitmap bm) {
+
+
+        try {
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            bm.compress(Bitmap.CompressFormat.JPEG, 85, fos);
+            fos.flush();
+            fos.close();
+            return Uri.fromFile(tempFile);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // TODO Auto-generated method stub
 
         switch (requestCode) {
             case PHOTO_REQUEST_TAKEPHOTO:
-                startPhotoZoom(Uri.fromFile(tempFile), 150);
+                if(isNougat())
+                {
+
+                    startPhotoZoom(getImageContentUri(tempFile), 150);
+                }
+                else
+                {
+                    startPhotoZoom(Uri.fromFile(tempFile), 150);
+
+                }
+
                 break;
 
             case PHOTO_REQUEST_GALLERY:
@@ -365,9 +443,36 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
 
     }
 
+    /**
+     * android7.0之后转换Url方法
+     * 转换 content:// uri  *   * @param imageFile  * @return
+     */
+    public Uri getImageContentUri(File imageFile) {
+        String filePath = imageFile.getAbsolutePath();
+        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[]{MediaStore.Images.Media._ID}, MediaStore.Images.Media.DATA + "=? ", new String[]{filePath}, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+            Uri baseUri = Uri.parse("content://media/external/images/media");
+            return Uri.withAppendedPath(baseUri, "" + id);
+        } else {
+            if (imageFile.exists()) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DATA, filePath);
+                return getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            } else {
+                return null;
+            }
+        }
+    }
+
+
+
     private void startPhotoZoom(Uri uri, int size) {
         Intent intent = new Intent("com.android.camera.action.CROP");
+
         intent.setDataAndType(uri, "image/*");
+        intent.putExtra("return-data", true);
+
         // crop为true是设置在开启的intent中设置显示的view可以剪裁
         intent.putExtra("crop", "true");
 
@@ -378,7 +483,7 @@ public class NewContactActivity extends BaseActivity implements View.OnClickList
         // outputX,outputY 是剪裁图片的宽高
         intent.putExtra("outputX", size);
         intent.putExtra("outputY", size);
-        intent.putExtra("return-data", true);
+
 
         startActivityForResult(intent, PHOTO_REQUEST_CUT);
     }

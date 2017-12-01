@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -43,6 +44,7 @@ public class ChatAdapter extends BaseAdapter {
     {
         public ImageView imgHead;
         public TextView tvPos, tvTime, tvCon, tvSend;
+        public LinearLayout posBox;
     }
     ViewHolder viewHolder = null;
 
@@ -73,30 +75,29 @@ public class ChatAdapter extends BaseAdapter {
 
 //        if (convertView == null)
 //        {
-            viewHolder = new ViewHolder();
-            if(entity.getMsgType() == 0)
-            {
-                convertView = mInflater.inflate(
-                        R.layout.chat_send_item, null);
-                viewHolder.tvSend = (TextView) convertView
-                        .findViewById(R.id.textSendStatus);
-            }
-            else if(entity.getMsgType() == 1)
-            {
-                convertView = mInflater.inflate(
-                        R.layout.chat_rcv_item, null);
+        viewHolder = new ViewHolder();
+        if (entity.getMsgType() == 0) {
+            convertView = mInflater.inflate(
+                    R.layout.chat_send_item, null);
 
-            }
+        } else if (entity.getMsgType() == 1) {
+            convertView = mInflater.inflate(
+                    R.layout.chat_rcv_item, null);
 
-            viewHolder.imgHead = (ImageView) convertView
-                    .findViewById(R.id.imageChatRcvHead);
-            viewHolder.tvPos = (TextView) convertView
-                    .findViewById(R.id.textRcvPos);
-            viewHolder.tvTime = (TextView) convertView
-                    .findViewById(R.id.textTimeRcv);
-            viewHolder.tvCon = (TextView) convertView
-                    .findViewById(R.id.textRcv);
-            convertView.setTag(viewHolder);
+        }
+        viewHolder.tvSend = (TextView) convertView
+                .findViewById(R.id.textSendStatus);
+        viewHolder.imgHead = (ImageView) convertView
+                .findViewById(R.id.imageChatRcvHead);
+        viewHolder.tvPos = (TextView) convertView
+                .findViewById(R.id.textRcvPos);
+        viewHolder.tvTime = (TextView) convertView
+                .findViewById(R.id.textTimeRcv);
+        viewHolder.tvCon = (TextView) convertView
+                .findViewById(R.id.textRcv);
+        viewHolder.posBox = (LinearLayout) convertView
+                .findViewById(R.id.posInfoBox);
+        convertView.setTag(viewHolder);
 
 //        }
 //        else
@@ -105,21 +106,46 @@ public class ChatAdapter extends BaseAdapter {
 //        }
 
 
-        //发送状态
-        try {
-            if (entity.getMsgType() == 0) {
-                if (entity.getMsgSendStatue() == 0) {
-                    viewHolder.tvSend.setText(mContext.getResources().getString(R.string.sending));
-                } else if (entity.getMsgSendStatue() == 2) {
-                    viewHolder.tvSend.setText(mContext.getResources().getString(R.string.send_failed));
+        //状态信息
+        if (entity.getMsgType() == 0) {
+            try {
+                if (entity.getMsgType() == 0) {
+                    if (entity.getMsgSendStatue() == 0) {
+                        viewHolder.tvSend.setText(mContext.getResources().getString(R.string.sending));
+                    } else if (entity.getMsgSendStatue() == 2) {
+                        viewHolder.tvSend.setText(mContext.getResources().getString(R.string.send_failed));
+                    } else {
+                        if (DataUtil.isBdNum(entity.getRcvAddress())) {
+                            viewHolder.tvSend.setText(mContext.getResources().getString(R.string.send_to_bd));
+                        } else if (DataUtil.isPhoneNum(entity.getRcvAddress())) {
+                            viewHolder.tvSend.setText(mContext.getResources().getString(R.string.send_to_mobile));
+                        } else {
+                            viewHolder.tvSend.setVisibility(View.GONE);
+                        }
+                    }
+
+                }
+            } catch (Exception e) {
+
+            }
+
+        } else if (entity.getMsgType() == 1) {
+            try {
+
+                if (DataUtil.isBdNum(entity.getRcvAddress())) {
+                    viewHolder.tvSend.setText(mContext.getResources().getString(R.string.rcv_from_bd));
+                } else if (DataUtil.isPhoneNum(entity.getRcvAddress())) {
+                    viewHolder.tvSend.setText(mContext.getResources().getString(R.string.rcv_from_mobile));
                 } else {
                     viewHolder.tvSend.setVisibility(View.GONE);
                 }
 
-            }
-        } catch (Exception e) {
 
+            } catch (Exception e) {
+
+            }
         }
+
 
 
         //消息时间
@@ -130,12 +156,12 @@ public class ChatAdapter extends BaseAdapter {
         }
         else
         {
-            viewHolder.tvTime.setVisibility(View.INVISIBLE);
+            viewHolder.tvTime.setVisibility(View.GONE);
         }
 
         //位置信息
         if (TextUtils.isEmpty(entity.getMsgPos())) {
-            viewHolder.tvPos.setVisibility(View.GONE);
+            viewHolder.posBox.setVisibility(View.GONE);
         } else {
             try
             {
@@ -147,13 +173,13 @@ public class ChatAdapter extends BaseAdapter {
             }
             catch(Exception e)
             {
-                viewHolder.tvPos.setVisibility(View.GONE);
+                viewHolder.posBox.setVisibility(View.GONE);
             }
 
         }
 
         //具体内容
-        viewHolder.tvCon.setText(entity.getMsgCon());
+        viewHolder.tvCon.setText(TextUtils.isEmpty(entity.getMsgCon())?"":entity.getMsgCon());
 
         //头像
 //        if (entity.getMsgType() == 0) {

@@ -15,6 +15,7 @@ import com.xyxl.tianyingn3.database.Msg_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.logs.LogUtil;
+import com.xyxl.tianyingn3.util.DataUtil;
 
 import java.security.Key;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.List;
  * Introductions : 引导页面，软件启动页面
  */
 public class SplashActivity extends BaseActivity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,7 @@ public class SplashActivity extends BaseActivity {
 //                cList.get(i).delete();
 //            }
 //        }
+
 
         //写入上次北斗卡号
         BdCardBean.getInstance().setIdNum(SettingSharedPreference.getDataString(this,LAST_BD_CARD_NUM));

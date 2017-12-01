@@ -15,9 +15,7 @@
     <string name="create_new_bt_connect">Trying to create a new connection</string>
     <string name="bt_connect_failed">蓝牙没有初始化，连接失败</string>
     <string name="bt_service_open_failed">蓝牙服务开启失败</string>
-    <string name="bt_onoff">蓝牙开关</string>
-    <string name="bt_device_list">蓝牙设备</string>
-    <string name="bt_device_search">搜索</string>
+
     <string name="ble_cant_use">本设备不支持BLE</string>
     <string name="ble_service_bind">BLE服务启动</string>
     <string name="ble_service_unbind">BLE服务关闭</string>
@@ -42,17 +40,30 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
+    <!--登录注册相关-->
+    <string name="title_login">登录</string>
+    <string name="title_register">注册</string>
+    <string name="enter_bd_num">请输入北斗卡号</string>
+    <string name="enter_password">请输入密码</string>
+    <string name="register_free">免费注册</string>
+    <string name="get_password">忘记密码?</string>
+
     <!--主页相关-->
     <string name="home">首页</string>
     <string name="msg">消息</string>
     <string name="map">地图</string>
     <string name="me">我的</string>
+    <string name="setting">设置</string>
 
     <!--蓝牙提示相关-->
     <string name="connected_to">已连接至:</string>
     <string name="connected_no">未连接设备</string>
     <string name="connectting">设备连接中……</string>
     <string name="connected_failed">设备连接失败</string>
+    <string name="bt_onoff">蓝牙开关</string>
+    <string name="bt_device_list">蓝牙设备</string>
+    <string name="bt_device_search">搜索</string>
+    <string name="bluetooth">蓝牙</string>
 
     <!--传感器相关-->
     <string name="no_sensor">手机不支持指南针功能</string>
@@ -63,6 +74,19 @@
     <string name="bd_com_lv">通信等级:</string>
     <string name="sending">发送中</string>
     <string name="send_failed">发送失败</string>
+    <string name="send_to_bd">发送至北斗</string>
+    <string name="send_to_mobile">发送至手机</string>
+    <string name="rcv_from_bd">来自北斗</string>
+    <string name="rcv_from_mobile">来自手机</string>
+
+    <!--附加信息相关-->
+    <string name="device_power">设备电量:</string>
+    <string name="running_time">运行时长:</string>
+
+    <!--报文协议相关-->
+    <string name="msg_code_start_index">0F</string>
+    <string name="msg_code_pos_msg">01</string>
+    <string name="msg_code_sms_msg">04</string>
 
     <!--报文相关-->
     <string name="send_msg">发送</string>
@@ -70,14 +94,20 @@
     <string name="pos_send_on">附带位置</string>
     <string name="pos_send_off">关闭位置</string>
     <string name="cant_send_msg">设备未正确连接，不可发送信息</string>
+    <string name="no_msg">无消息</string>
+    <string name="new_msg">新建消息</string>
+    <string name="send_to_contact">收件人:</string>
+    <string name="input_rcv_contact">在此输入接收方地址</string>
+    <string name="send_to_device">将消息发送至设备</string>
+    <string name="send_to_phone">将消息发送至手机</string>
+    <string name="pos_info_text">[位置信息]</string>
 
     <!--对话框相关-->
     <string name="confirm">确定</string>
     <string name="esc">取消</string>
     <string name="donot_connect_bd">确认不连接北斗设备？</string>
-
-    <!--报文消息相关-->
-    <string name="no_msg">无消息</string>
+    <string name="exit_confirm">是否退出?</string>
+    <string name="save">保存</string>
 
     <!--联系人相关-->
     <string name="this_device">#本机#</string>
@@ -87,16 +117,37 @@
     <string name="have_same_name">该用户名已使用</string>
     <string name="have_same_num">该北斗卡号已使用</string>
     <string name="have_same_phone">该手机号已使用</string>
+    <string name="edit_new_contact">编辑联系人资料</string>
+
+    <!--群组相关-->
+    <string name="add_new_group">创建群组</string>
+    <string name="my_group">我的群组</string>
 
     <!--设置页面相关-->
     <string name="login_or_register">登录/注册</string>
     <string name="bt_set">设备连接</string>
     <string name="pos_set">定位设置</string>
+    <string name="notice_set">通知设置</string>
+    <string name="msg_set">提醒设置</string>
+    <string name="msg_saved_set">预制消息设置</string>
+    <string name="location_set">定位设置</string>
+    <string name="map_set">地图设置</string>
+    <string name="datas_set">本地数据管理</string>
+    <string name="notice_bar_set">通知栏提醒开关</string>
+    <string name="notice_home_msg_set">首页新消息通知开关</string>
+    <string name="notice_home_device_set">首页设备信息通知开关</string>
+    <string name="ring_set">铃声开关</string>
+    <string name="vibration_set">振动开关</string>
+    <string name="saved_msg_list">预制消息列表</string>
 
     <!--按钮相关-->
     <string name="edit">编辑</string>
     <string name="share">分享</string>
     <string name="delete">删除</string>
+
+    <!--地图定位相关-->
+    <string name="device_location_type">北斗设备定位</string>
+    <string name="phone_location_type">手机自身定位</string>
 
     <!--权限相关-->
     <string name="permission_denied">有权限被禁止，可能影响使用</string>
@@ -110,6 +161,9 @@
 
     <!--首页快捷按钮相关-->
     <string name="btn_home_set_title">快捷按钮设置</string>
+
+    <!--SOS相关-->
+    <string name="sos_confirm">确定启动SOS功能?</string>
 
     <!--联系人布局相关-->
     <array name="waveSideBarLetters">

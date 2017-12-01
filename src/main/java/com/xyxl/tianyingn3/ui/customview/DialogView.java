@@ -17,6 +17,7 @@ import android.widget.TimePicker;
 
 import com.google.common.eventbus.EventBus;
 import com.xyxl.tianyingn3.R;
+import com.xyxl.tianyingn3.global.App;
 import com.xyxl.tianyingn3.global.FinalDatas;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ import java.util.List;
 
 public class DialogView implements FinalDatas {
 
-    public static void ShowCHooseDialog(Context c, List<String> datas, final Handler myHandler)
+    public static void ShowChooseDialog(Context c, List<String> datas, final Handler myHandler)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(c);
         String[] strs = new String[datas.size()];
@@ -50,6 +51,7 @@ public class DialogView implements FinalDatas {
                         Message msg = new Message();
                         msg.what = 1001;
                         msg.arg1 = which;
+
                         myHandler.sendMessage(msg);
                         dialog.dismiss();
                     }
@@ -57,57 +59,39 @@ public class DialogView implements FinalDatas {
         builder.show();
     }
 
-    public static void ShowDialog(Context c, String title, String msg,
-                                  String btn1, String btn2, final Handler myHandler) {
+    public static void ShowDialog(Context c, String title, final Handler myHandler) {
         //*******************************//
 
-//        AlertDialog.Builder builder = new AlertDialog.Builder(c);
-//        View view = View.inflate(c, R.layout.time_dialog, null);
-//        final DatePicker datePicker = (DatePicker) view
-//                .findViewById(R.id.datePicker1);
-//        final TimePicker timePicker = (android.widget.TimePicker) view
-//                .findViewById(R.id.timePicker1);
-//        builder.setView(view);
-//
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTimeInMillis(System.currentTimeMillis());
-//        datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
-//                cal.get(Calendar.DAY_OF_MONTH), null);
-//
-//        timePicker.setIs24HourView(true);
-//        timePicker.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));
-//        timePicker.setCurrentMinute(Calendar.MINUTE);
-//
-//        builder.setTitle("Choose date & time");
-//        builder.setPositiveButton("OK",
-//                new DialogInterface.OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//
-//                        StringBuffer sb = new StringBuffer();
-//                        sb.append(String.format("%d-%02d-%02d",
-//                                datePicker.getYear(),
-//                                datePicker.getMonth() + 1,
-//                                datePicker.getDayOfMonth()));
-//                        sb.append(" ");
-//
-//                        sb.append(timePicker.getCurrentHour()).append(":")
-//                                .append(timePicker.getCurrentMinute());
-//
-//                        if (sb != null && sb.length() > 0) {
-//                            Message msg = new Message();
-//                            msg.what = 101;
-//                            msg.obj = sb.toString();
-//                            myHandler.sendMessage(msg);
-//                        }
-//
-//                        dialog.cancel();
-//                    }
-//                });
-//
-//        Dialog dialog = builder.create();
-//        dialog.show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(c);
+        View view = View.inflate(c, R.layout.dialog_confirm, null);
+        TextView tvTitle = (TextView)view.findViewById(R.id.textTitle);
+        tvTitle.setText(title);
+        final Button btnOk = (Button) view.findViewById(R.id.buttonOk);
+        final Button btnEsc = (Button) view.findViewById(R.id.buttonEsc);
+
+        builder.setView(view);
+        final Dialog dialog = builder.create();
+        dialog.show();
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myHandler == null) {
+//                    App.getInstance().finishAllActivity();
+//                    int nPid = android.os.Process.myPid();
+//                    android.os.Process.killProcess(nPid);
+//                    System.exit(0);
+                    App.finishAllActivity();
+                    App.finishCurrentActivity();
+                }
+            }
+        });
+        btnEsc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 
 

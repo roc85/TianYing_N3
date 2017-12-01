@@ -8,8 +8,9 @@
 
     <ImageView
         android:id="@+id/drag_list_icon"
-        android:layout_width="60dp"
+        android:layout_width="5dp"
         android:layout_height="60dp"
+        android:visibility="invisible"
         android:layout_centerVertical="true"
         app:srcCompat="@mipmap/ic_launcher_round" />
 

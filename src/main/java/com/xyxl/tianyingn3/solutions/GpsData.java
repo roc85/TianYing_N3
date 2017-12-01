@@ -47,6 +47,42 @@ public class GpsData
     }
 
     /**
+     * * 火星坐标系 (GCJ-02) to 84 * * @param lon * @param lat * @return
+     * */
+    public static Gps gcj_To_Gps84(double lat, double lon) {
+        Gps gps = transform(lat, lon);
+        double lontitude = lon * 2 - gps.getWgLon();
+        double latitude = lat * 2 - gps.getWgLat();
+        return new Gps(latitude, lontitude);
+    }
+    /**
+     * * 火星坐标系 (GCJ-02) 与百度坐标系 (BD-09) 的转换算法 * * 将 BD-09 坐标转换成GCJ-02 坐标 * * @param
+     * bd_lat * @param bd_lon * @return
+     */
+    public static Gps bd09_To_Gcj02(double bd_lat, double bd_lon) {
+        double x = bd_lon - 0.0065, y = bd_lat - 0.006;
+        double z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * pi);
+        double theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * pi);
+        double gg_lon = z * Math.cos(theta);
+        double gg_lat = z * Math.sin(theta);
+        return new Gps(gg_lat, gg_lon);
+    }
+
+    /**
+     * (BD-09)-->84
+     * @param bd_lat
+     * @param bd_lon
+     * @return
+     */
+    public static Gps bd09_To_Gps84(double bd_lat, double bd_lon) {
+
+        Gps gcj02 = GpsData.bd09_To_Gcj02(bd_lat, bd_lon);
+        Gps map84 = GpsData.gcj_To_Gps84(gcj02.getWgLat(),
+                gcj02.getWgLon());
+        return map84;
+
+    }
+    /**
      * 84 to 火星坐标系 (GCJ-02) World Geodetic System ==> Mars Geodetic System
      *
      * @param lat
@@ -193,6 +229,10 @@ public class GpsData
         double d = convertToDecimal(src[0],src[1], CommonUtil.Str2double(src[2]+"."+src[3]));
         DecimalFormat df = new DecimalFormat("#.000");
         res = df.format(d);
+        if(res.startsWith("."))
+        {
+            res="0"+res;
+        }
         return res;
     }
 

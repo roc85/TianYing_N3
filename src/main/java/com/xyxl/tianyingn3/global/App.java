@@ -39,10 +39,22 @@ import java.util.List;
 
 public class App extends Application{
 
+    private static App instance;
+
+    public App() {
+    }
+
+    //单例模式中获取唯一的MyApplication实例
+    public static App getInstance() {
+        if (null == instance) {
+            instance = new App();
+        }
+        return instance;
+    }
 
     protected static Context context;
     protected static String appName;
-
+    private static long startTime;
     /**
      * 维护Activity 的list
      */
@@ -50,11 +62,22 @@ public class App extends Application{
             .synchronizedList(new LinkedList<Activity>());
 
     @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+        finishAllActivity();
+
+        System.exit(0);
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
 //        context = this.getApplicationContext();
 //        appName = getAppNameFromSub();
 //        registerActivityListener();
+
+        startTime = System.currentTimeMillis();
 
         //初始化Sugar数据库
         SugarContext.init(this);
@@ -85,12 +108,12 @@ public class App extends Application{
         Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy));
 
         //日志文件保存
-//        formatStrategy = CsvFormatStrategy.newBuilder()
-//                .tag(getResources().getString(R.string.app_tag))
-//
-//                .build();
-//
-//        Logger.addLogAdapter(new DiskLogAdapter(formatStrategy));
+        formatStrategy = CsvFormatStrategy.newBuilder()
+                .tag(getResources().getString(R.string.app_tag))
+
+                .build();
+
+        Logger.addLogAdapter(new DiskLogAdapter(formatStrategy));
 
     }
 
@@ -108,11 +131,15 @@ public class App extends Application{
         return "TianYingN3";
     }
 
+    public static long getStartTime() {
+        return startTime;
+    }
+
 
     /**
      * @param activity 作用说明 ：添加一个activity到管理里
      */
-    public void pushActivity(Activity activity) {
+    public static void pushActivity(Activity activity) {
         mActivitys.add(activity);
 //        LogUtils.d("activityList:size:"+mActivitys.size());
     }
@@ -238,6 +265,8 @@ public class App extends Application{
             activity.finish();
         }
         mActivitys.clear();
+
+        appExit();
     }
 
     /**
@@ -262,7 +291,7 @@ public class App extends Application{
                      *  监听到 Activity创建事件 将该 Activity 加入list
                      */
 //                    LogUtil.i(activity.getLocalClassName()+" is pushed");
-                    pushActivity(activity);
+//                    pushActivity(activity);
 
                 }
 
@@ -294,16 +323,16 @@ public class App extends Application{
 
                 @Override
                 public void onActivityDestroyed(Activity activity) {
-                    if (null==mActivitys&&mActivitys.isEmpty()){
-                        return;
-                    }
-                    if (mActivitys.contains(activity)){
-                        /**
-                         *  监听到 Activity销毁事件 将该Activity 从list中移除
-                         */
-//                        LogUtil.i(activity.getLocalClassName()+" is poped");
-                        popActivity(activity);
-                    }
+//                    if (null==mActivitys&&mActivitys.isEmpty()){
+//                        return;
+//                    }
+//                    if (mActivitys.contains(activity)){
+//                        /**
+//                         *  监听到 Activity销毁事件 将该Activity 从list中移除
+//                         */
+////                        LogUtil.i(activity.getLocalClassName()+" is poped");
+//                        popActivity(activity);
+//                    }
                 }
             });
         }

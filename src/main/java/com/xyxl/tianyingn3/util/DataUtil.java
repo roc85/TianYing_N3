@@ -60,4 +60,93 @@ public class DataUtil {
         }
         return sb.toString().toUpperCase().trim();
     }
+
+    /**
+     * Bd num 2 bytes str string.
+     *
+     * @param num the num
+     * @return the string
+     */
+    public static String BdNum2BytesStr(String num)
+    {
+        long numLong = CommonUtil.Str2long(num);
+        if(numLong > 0)
+        {
+            byte[] numBytes = new byte[3];
+            numBytes[0] = (byte) (numLong/256/256);
+            numBytes[1] = (byte) ((numLong/256)%256);
+            numBytes[2] = (byte) (numLong%256);
+            String res = byte2HexStr(numBytes,0);
+            while(res.length()<6)
+            {
+                res = "0"+res;
+            }
+            return res;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Phone num 2 bytes str string.
+     *
+     * @param num the num
+     * @return the string
+     */
+    public static String PhoneNum2BytesStr(String num)
+    {
+        long numLong = CommonUtil.Str2long(num);
+        if(numLong > 0)
+        {
+            byte[] numBytes = new byte[5];
+
+            numBytes[0] = (byte) ((numLong >> 32) & 0xFF);
+            numBytes[1] = (byte) ((numLong >> 24) & 0xFF);
+            numBytes[2] = (byte) ((numLong >> 16) & 0xFF);
+            numBytes[3] = (byte) ((numLong >> 8) & 0xFF);
+            numBytes[4] = (byte) ((numLong) & 0xFF);
+            String res = byte2HexStr(numBytes,0);
+            while(res.length()<10)
+            {
+                res = "0"+res;
+            }
+            return res;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Is phone num boolean.
+     *
+     * @param num the num
+     * @return the boolean
+     */
+    public static boolean isPhoneNum(String num)
+    {
+        if(num.length() == 11 && num.startsWith("1"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static boolean isBdNum(String num)
+    {
+        if(num.length() >0 && num.length()<8 && CommonUtil.Str2int(num) != 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

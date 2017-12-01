@@ -17,6 +17,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.LayoutDirection;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -27,6 +29,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,7 +44,9 @@ import com.xyxl.tianyingn3.bean.BtConnectInfo;
 import com.xyxl.tianyingn3.bean.MyPosition;
 import com.xyxl.tianyingn3.database.Message_DB;
 import com.xyxl.tianyingn3.database.Notice_DB;
+import com.xyxl.tianyingn3.global.App;
 import com.xyxl.tianyingn3.global.AppBus;
+import com.xyxl.tianyingn3.global.MyApp;
 import com.xyxl.tianyingn3.global.SettingSharedPreference;
 import com.xyxl.tianyingn3.logs.LogUtil;
 import com.xyxl.tianyingn3.solutions.GpsData;
@@ -51,6 +56,7 @@ import com.xyxl.tianyingn3.ui.activities.NewContactActivity;
 import com.xyxl.tianyingn3.ui.activities.NewMsgActivity;
 import com.xyxl.tianyingn3.ui.activities.SearchActivity;
 import com.xyxl.tianyingn3.ui.activities.SetHomeBtnActivity;
+import com.xyxl.tianyingn3.ui.customview.BeamsView;
 import com.xyxl.tianyingn3.ui.customview.ClearEditText;
 import com.xyxl.tianyingn3.ui.customview.CompassView;
 import com.xyxl.tianyingn3.ui.customview.DragListAdapter;
@@ -89,10 +95,15 @@ public class HomeFragment extends BaseFragment {
     //其他控件
     private ClearEditText searchHomeEdit;
     private TextView tvCardNum, tvBtConnect, tvComLv, tvBeams;
-    private RelativeLayout infosBox;
+    private RelativeLayout infosBox, addInfoBox;
     private ImageView ivOpenInfos;
     private Chronometer beamTimer;
     private LinearLayout btnBox;
+    private TextView tvTitle;
+    private TextView tvPower, tvRunTime;
+    private ImageView ivLeft, ivRight;
+    private BeamsView beamsView;
+    private GridLayout fastGroup;
 
     private ListView noticeList;
     private List<Notice_DB> noticeDatas;
@@ -100,6 +111,8 @@ public class HomeFragment extends BaseFragment {
 
     private int height = 150;
     private float sDpi;
+
+    private boolean needFreshBtns = true;
 
     protected Runnable mCompassViewUpdater = new Runnable() {
         @Override
@@ -135,6 +148,12 @@ public class HomeFragment extends BaseFragment {
         }
     };
 
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_home;
+    }
+
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         //指南针相关
@@ -162,75 +181,98 @@ public class HomeFragment extends BaseFragment {
         mChinease = TextUtils.equals(Locale.getDefault().getLanguage(), "zh");
 
         mPointer = (CompassView) view.findViewById(R.id.compassView);
-        imgCompass = BitmapFactory.decodeResource(getResources(),R.drawable.compass_cn);
+        imgCompass = BitmapFactory.decodeResource(getResources(),R.drawable.homepage_compass);
         mPointer.setBitmap(imgCompass);
 
-        mPointer.setImageResource(mChinease ? R.drawable.compass_cn : R.drawable.compass);
 
         //其他控件
-        searchHomeEdit = (ClearEditText)view.findViewById(R.id.searchHome);
+//        searchHomeEdit = (ClearEditText)view.findViewById(R.id.searchHome);
         tvBtConnect = (TextView)view.findViewById(R.id.textBtConnect);
         tvCardNum = (TextView)view.findViewById(R.id.textCardNum);
         tvComLv = (TextView)view.findViewById(R.id.textComLv);
         tvBeams = (TextView)view.findViewById(R.id.textbeams);
+        tvTitle = (TextView)view.findViewById(R.id.textHomeTitle);
+        tvPower = (TextView)view.findViewById(R.id.powerInfo);
+        tvRunTime = (TextView)view.findViewById(R.id.timeInfo);
         infosBox = (RelativeLayout)view.findViewById(R.id.infosBox);
+        addInfoBox = (RelativeLayout)view.findViewById(R.id.addInfoBox);
         noticeList = (ListView)view.findViewById(R.id.homeList);
         ivOpenInfos = (ImageView)view.findViewById(R.id.ivOpenInfos);
+        ivLeft = (ImageView)view.findViewById(R.id.imageHomeLeft);
+        ivRight = (ImageView)view.findViewById(R.id.imageHomeRight);
         beamTimer = (Chronometer)view.findViewById(R.id.beamTimer);
         btnBox = (LinearLayout) view.findViewById(R.id.btnBox);
-        RefreshBtnBox();
+        beamsView = (BeamsView)view.findViewById(R.id.beamView);
+        fastGroup = (GridLayout)view.findViewById(R.id.fastBtnGroup);
 
+        RefreshBtnBox();
+        beamTimer.start();
         beamTimer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                tvBeams.setText("");
+//                tvBeams.setText("");
                 int[] beams = BdCardBean.getInstance().getBeamLvs();
                 if(beams == null)
                 {
                     beams = new int[10];
                 }
-                for(int i=0;i<10;i++)
-                {
-                    tvBeams.append(" "+beams[i]+" ");
-                }
+                beamsView.updateDirection(beams);
+                int time = (int) ((System.currentTimeMillis() - App.getStartTime())/1000/60);
+                tvRunTime.setText((time>59?(time/ 60 + "h" + time % 60):time)+"m");
+//                tvPower.setText("");
+
+//                for(int i=0;i<beams.length;i++)
+//                {
+//                    tvBeams.append(" "+beams[i]+" ");
+//                }
 
                 //
-                tvBeams.setText(
-                        MyPosition.getInstance().getMyLon()+":"+MyPosition.getInstance().getMyLat()+"\n"+
-                        DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLon()),1)
-                        +":"+DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLat()),1)+"\n"+
-                        new String(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLon()))+":"+
-                                new String(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLat())));
+//                tvBeams.setText(
+//                        MyPosition.getInstance().getMyLon()+":"+MyPosition.getInstance().getMyLat()+"\n"+
+//                        DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLon()),1)
+//                        +":"+DataUtil.byte2HexStr(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLat()),1)+"\n"+
+//                        new String(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLon()))+":"+
+//                                new String(GpsData.GetPosDataBytes(MyPosition.getInstance().getMyLat())));
             }
         });
 
         ivOpenInfos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(GetBoxHeight())
-                {
-                    while(height != 250)
-                    {
-                        height += 100;
-                        infosBox.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height * sDpi)));
-                        beamTimer.start();
-                    }
-                }
-                else
-                {
-                    while(height != 150)
-                    {
-                        height -= 100;
-                        infosBox.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height * sDpi)));
-                        beamTimer.stop();
-                    }
-                }
+            if(addInfoBox.getVisibility() == View.GONE)
+            {
+                addInfoBox.setVisibility(View.VISIBLE);
+                addInfoBox.startAnimation(AnimationUtils.loadAnimation(getHoldingActivity(),R.anim.add_infos_show));
+                infosBox.setBackgroundResource(R.drawable.home_round_rect_up);
+                ivOpenInfos.setImageResource(R.drawable.homepage_button_detail_icon_arrow);
+            }
+            else if(addInfoBox.getVisibility() == View.VISIBLE)
+            {
+                Animation animation = AnimationUtils.loadAnimation(getHoldingActivity(),R.anim.add_infos_hide);
+                addInfoBox.startAnimation(animation);
+                animation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
 
+                    }
 
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        addInfoBox.setVisibility(View.GONE);
+                        infosBox.setBackgroundResource(R.drawable.home_round_rect_back);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+            }
             }
         });
 
-        searchHomeEdit.setOnClickListener(new View.OnClickListener() {
+        ivRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getHoldingActivity().OpenActivity(false, SearchActivity.class);
@@ -278,7 +320,66 @@ public class HomeFragment extends BaseFragment {
 
         RefreshUI();
 
+        InitUi();
 
+        noticeDatas = Notice_DB.listAll(Notice_DB.class,"notice_Time desc");
+        homeNoticeAdapter = new HomeNoticeAdapter(getHoldingActivity(),noticeDatas);
+        noticeList.setAdapter(homeNoticeAdapter);
+    }
+
+    private void InitUi() {
+
+        addInfoBox.setVisibility(View.GONE);
+
+        tvTitle.setTextSize(18);
+        tvBtConnect.setTextSize(15);
+        tvCardNum.setTextSize(15);
+        tvComLv.setTextSize(15);
+
+        RelativeLayout.LayoutParams relaParams =
+                new RelativeLayout.LayoutParams(getHoldingActivity().getMyDpWidth(22.5f), getHoldingActivity().getMyDpHeight(28f));
+        relaParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        relaParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        relaParams.setMargins(getHoldingActivity().getMyDpHeight(13),getHoldingActivity().getMyDpHeight(15),0,getHoldingActivity().getMyDpHeight(5f));
+        ivLeft.setLayoutParams(relaParams);
+
+        relaParams =
+                new RelativeLayout.LayoutParams(getHoldingActivity().getMyDpWidth(23f), getHoldingActivity().getMyDpHeight(23f));
+        relaParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        relaParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        relaParams.setMargins(getHoldingActivity().getMyDpHeight(0),getHoldingActivity().getMyDpHeight(0),getHoldingActivity().getMyDpHeight(17.5f),getHoldingActivity().getMyDpHeight(5f));
+        ivRight.setLayoutParams(relaParams);
+
+        LinearLayout.LayoutParams lineParams =
+                new LinearLayout.LayoutParams(getHoldingActivity().getMyDpWidth(338f), getHoldingActivity().getMyDpHeight(147f));
+        lineParams.setMargins(getHoldingActivity().getMyDpWidth(11),
+                getHoldingActivity().getMyDpHeight(0),
+                getHoldingActivity().getMyDpWidth(11),
+                getHoldingActivity().getMyDpHeight(0));
+
+        infosBox.setLayoutParams(lineParams);
+
+        lineParams =
+                new LinearLayout.LayoutParams(getHoldingActivity().getMyDpWidth(338f), ViewGroup.LayoutParams.WRAP_CONTENT);
+        lineParams.setMargins(getHoldingActivity().getMyDpWidth(11),
+                getHoldingActivity().getMyDpHeight(0),
+                getHoldingActivity().getMyDpWidth(11),
+                getHoldingActivity().getMyDpHeight(0));
+        addInfoBox.setLayoutParams(lineParams);
+
+        relaParams =
+                new RelativeLayout.LayoutParams(getHoldingActivity().getMyDpWidth(160f), getHoldingActivity().getMyDpHeight(55f));
+        relaParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        relaParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        beamsView.setLayoutParams(relaParams);
+
+
+        relaParams =
+                new RelativeLayout.LayoutParams(getHoldingActivity().getMyDpWidth(80f), getHoldingActivity().getMyDpHeight(80f));
+        relaParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        relaParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        relaParams.setMargins(getHoldingActivity().getMyDpHeight(25),getHoldingActivity().getMyDpHeight(0),getHoldingActivity().getMyDpHeight(0),getHoldingActivity().getMyDpHeight(0));
+        mPointer.setLayoutParams(relaParams);
     }
 
     private void requestPosPermission() {
@@ -320,55 +421,129 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void RefreshBtnBox() {
-        btnBox.removeAllViews();
-        String homeBtns = SettingSharedPreference.getDataString(getHoldingActivity(),HOME_BTNS_FLAG);
+        if (needFreshBtns) {
+            fastGroup.removeAllViews();
+            String homeBtns = SettingSharedPreference.getDataString(getHoldingActivity(), HOME_BTNS_FLAG);
 
-        if(TextUtils.isEmpty(homeBtns))
-        {
-            homeBtns = "";
-            for(int i=0;i<HOME_BTNS_INFOS.length;i++)
-            {
-                homeBtns += HOME_BTNS_INFOS[i]+"f"+1+"g";
-            }
-        }
-
-        try {
-            String[] homePerBtn = homeBtns.split("g");
-            List<Integer> flags = new ArrayList<Integer>();
-            for (int i = 0; i < homeBtns.length(); i++) {
-                String[] tmp = homePerBtn[i].split("f");
-                if (tmp[1].equals("1")) {
-                    Button btn = new Button(getHoldingActivity());
-                    btn.setText(tmp[0]);
-                    btn.setTag(tmp[0]);
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            BtnOpenActivity((String)v.getTag());
-//                            getHoldingActivity().OpenActivity(false, SetHomeBtnActivity.class);
-                        }
-
-
-                    });
-                    btnBox.addView(btn);
+            if (TextUtils.isEmpty(homeBtns)) {
+                homeBtns = "";
+                for (int i = 0; i < HOME_BTNS_INFOS.length; i++) {
+                    homeBtns += HOME_BTNS_INFOS[i] + "f" + 1 + "g";
                 }
             }
 
-        } catch (Exception e) {
+            try {
+                String[] homePerBtn = homeBtns.split("g");
+                List<Integer> flags = new ArrayList<Integer>();
+                for (int i = 0; i < homeBtns.length(); i++) {
+                    String[] tmp = homePerBtn[i].split("f");
+                    if (tmp[1].equals("1")) {
+                        LinearLayout btnBoxItem = new LinearLayout(getHoldingActivity());
+                        LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(getHoldingActivity().getMyDpWidth(90f), ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        }
+                        btnBoxItem.setLayoutParams(lineParams);
+                        btnBoxItem.setOrientation(LinearLayout.VERTICAL);
+                        btnBoxItem.setTag(tmp[0]);
+                        ImageView ivBtn = new ImageView(getHoldingActivity());
+                        lineParams =
+                                new LinearLayout.LayoutParams(getHoldingActivity().getMyDpWidth(34f), getHoldingActivity().getMyDpHeight(34f));
+                        lineParams.setMargins(0, getHoldingActivity().getMyDpHeight(6f), 0,getHoldingActivity().getMyDpHeight(6f));
+                        lineParams.gravity = Gravity.CENTER;
+                        ivBtn.setLayoutParams(lineParams);
 
-        Button btnNew = new Button(getHoldingActivity());
-        btnNew.setText("设置");
-        btnBox.addView(btnNew);
-        btnNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getHoldingActivity().OpenActivity(false, SetHomeBtnActivity.class);
+                        ivBtn.setBackgroundResource(getImageRes(tmp[0]));
+
+                        lineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        lineParams.gravity = Gravity.CENTER;
+                        TextView tvBtn = new TextView(getHoldingActivity());
+                        tvBtn.setLayoutParams(lineParams);
+                        tvBtn.setTextColor(0xFFFFFFFF);
+                        tvBtn.setTextSize(10);
+                        tvBtn.setText(tmp[0]);
+
+                        btnBoxItem.addView(ivBtn);
+                        btnBoxItem.addView(tvBtn);
+
+                        btnBoxItem.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                BtnOpenActivity((String) v.getTag());
+                            }
+
+
+                        });
+                        fastGroup.addView(btnBoxItem);
+                    }
+                }
+
+            } catch (Exception e) {
+
             }
-        });
+
+            LinearLayout btnBoxItemSet = new LinearLayout(getHoldingActivity());
+            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(getHoldingActivity().getMyDpWidth(90f), ViewGroup.LayoutParams.WRAP_CONTENT);
+            btnBoxItemSet.setLayoutParams(lineParams);
+            btnBoxItemSet.setOrientation(LinearLayout.VERTICAL);
+            btnBoxItemSet.setTag("设置");
+            ImageView ivBtn = new ImageView(getHoldingActivity());
+            lineParams =
+                    new LinearLayout.LayoutParams(getHoldingActivity().getMyDpWidth(34f), getHoldingActivity().getMyDpHeight(34f));
+            lineParams.setMargins(0, getHoldingActivity().getMyDpHeight(6f), 0,getHoldingActivity().getMyDpHeight(6f));
+            lineParams.gravity = Gravity.CENTER;
+            ivBtn.setLayoutParams(lineParams);
+            ivBtn.setBackgroundResource(R.drawable.homepage_icon_set);
+
+            lineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lineParams.gravity = Gravity.CENTER;
+            TextView tvBtn = new TextView(getHoldingActivity());
+            tvBtn.setLayoutParams(lineParams);
+            tvBtn.setTextColor(0xFFFFFFFF);
+            tvBtn.setTextSize(10);
+            tvBtn.setText("设置");
+
+            btnBoxItemSet.addView(ivBtn);
+            btnBoxItemSet.addView(tvBtn);
+//            Button btnNew = new Button(getHoldingActivity());
+//            btnNew.setText("设置");
+            fastGroup.addView(btnBoxItemSet);
+            btnBoxItemSet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getHoldingActivity().OpenActivity(false, SetHomeBtnActivity.class);
+                }
+            });
+        }
+//        needFreshBtns = false;
+
 
     }
+
+    private int getImageRes(String tag) {
+        int res = R.mipmap.ic_launcher_round;
+        if(tag.equals(HOME_BTNS_INFOS[0]))
+        {
+            res = R.drawable.homepage_icon_massage;
+
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[1]))
+        {
+            res = R.drawable.homepage_icon_create_contact;
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[2]))
+        {
+            res = R.drawable.homepage_icon_bluetooth;
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[3]))
+        {
+            res = R.drawable.homepage_icon_notice;
+        }
+        else if(tag.equals(HOME_BTNS_INFOS[4]))
+        {
+            res = R.drawable.homepage_icon_map;
+        }
+        return res;
+    }
+
     private void BtnOpenActivity(String tag) {
         if(tag.equals(HOME_BTNS_INFOS[0]))
         {
@@ -449,16 +624,10 @@ public class HomeFragment extends BaseFragment {
             tvBeams.append(" "+beams[i]+" ");
         }
 
-        noticeDatas = Notice_DB.listAll(Notice_DB.class,"notice_Time desc");
-        homeNoticeAdapter = new HomeNoticeAdapter(getHoldingActivity(),noticeDatas);
-        noticeList.setAdapter(homeNoticeAdapter);
+
 
     }
-    
-    @Override
-    protected int getLayoutId() {
-        return R.layout.fragment_home;
-    }
+
 
     @Override
     public void onResume() {
@@ -531,6 +700,10 @@ public class HomeFragment extends BaseFragment {
             LogUtil.e("rcvMSG");
 
             RefreshUI();
+
+        noticeDatas = Notice_DB.listAll(Notice_DB.class,"notice_Time desc");
+        homeNoticeAdapter = new HomeNoticeAdapter(getHoldingActivity(),noticeDatas);
+        noticeList.setAdapter(homeNoticeAdapter);
 //        }
     }
 

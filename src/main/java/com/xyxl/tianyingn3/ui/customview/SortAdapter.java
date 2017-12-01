@@ -93,7 +93,7 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
         }
         try {
             holder.tvName.setText(this.mData.get(position).getName());
-            holder.tvNum.setText(this.mData.get(position).getNum());
+            holder.tvNum.setText("");
             holder.lineBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -107,13 +107,6 @@ public class SortAdapter extends RecyclerView.Adapter<SortAdapter.ViewHolder> {
 
             Picasso.with(mContext).load(new File(this.mData.get(position).getHeadFile())).
                     transform(transformation).placeholder(R.mipmap.ic_launcher_round).into(holder.ivHead);
-
-            holder.tvName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                }
-            });
 
 
         } catch (Exception e) {

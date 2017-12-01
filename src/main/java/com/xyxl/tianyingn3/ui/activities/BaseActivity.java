@@ -1,6 +1,8 @@
 package com.xyxl.tianyingn3.ui.activities;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +14,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.global.App;
 import com.xyxl.tianyingn3.logs.LogUtil;
+import com.xyxl.tianyingn3.ui.customview.DialogView;
 import com.xyxl.tianyingn3.ui.fragments.BaseFragment;
 import com.xyxl.tianyingn3.global.FinalDatas;
 
@@ -27,6 +31,7 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
     //屏幕宽高数据
     private int screenWidth, screenHeight;
 
+    private float sDpi;
     //application实例
     private App myApp;
 
@@ -36,6 +41,13 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        App.pushActivity(this);
+        //通过dpi进行适配调节
+//        sDpi = getScreenDpi()>1?(getScreenDpi()/1.5f):(getScreenDpi());
+        sDpi = 1;//getScreenDpi();//
+        screenHeight = getScreenHeight();
+        screenWidth = getScreenWidth();
+        LogUtil.e("DPI-"+sDpi+" H-"+screenHeight+" W-"+screenWidth);
 //        myApp = (App) getApplication();
 
     }
@@ -51,6 +63,20 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
         screenWidth = outMetrics.widthPixels;
 
         return screenWidth;
+    }
+
+    public int getMyDpHeight(float src)
+    {
+        int res = 0;
+        res = (int) (src * screenHeight/640*sDpi);
+        return res;
+    }
+
+    public int getMyDpWidth(float src)
+    {
+        int res = 0;
+        res = (int) (src * screenWidth/360*sDpi);
+        return res;
     }
 
     public float getScreenDpi()
@@ -117,6 +143,14 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+
+        App.finishActivity(this);
+
+    }
     //返回键返回事件
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -130,7 +164,6 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
     }
 
     private void showExitAlert() {
-        // TODO 自动生成的方法存根
         AlertDialog.Builder b=new AlertDialog.Builder(this).setTitle("是否退出？");
 
         b
@@ -142,6 +175,8 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
                         // 点击“确认”后的操作
 
 //                        App.finishAllActivity();
+                        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        mNotificationManager.cancelAll();
                         int nPid = android.os.Process.myPid();
                         android.os.Process.killProcess(nPid);
 
@@ -156,5 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity implements FinalDat
                     }
                 });
         b.show();
+
+//        DialogView.ShowDialog(BaseActivity.this,getResources().getString(R.string.exit_confirm),null);
     }
 }

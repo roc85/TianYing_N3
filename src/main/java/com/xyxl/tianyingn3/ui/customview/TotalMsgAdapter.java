@@ -135,11 +135,23 @@ public class TotalMsgAdapter extends BaseAdapter {
             if(entity.getSendUserId() >= 0)
             {
                 Contact_DB tmp = Contact_DB.findById(Contact_DB.class,entity.getSendUserId());
-                viewHolder.tvName.setText(tmp.getContactName());
-                Picasso.with(mContext).load(new File(tmp.getHead())).
-                        transform(transformation).
-                        placeholder(R.mipmap.ic_launcher_round).
-                        into(viewHolder.imgHead);
+                if(tmp!=null)
+                {
+                    viewHolder.tvName.setText(tmp.getContactName());
+                    Picasso.with(mContext).load(new File(tmp.getHead())).
+                            transform(transformation).
+                            placeholder(R.mipmap.ic_launcher_round).
+                            into(viewHolder.imgHead);
+                }
+                else
+                {
+                    viewHolder.tvName.setText(entity.getRcvUserName());
+                }
+//                viewHolder.tvName.setText(tmp.getContactName());
+//                Picasso.with(mContext).load(new File(tmp.getHead())).
+//                        transform(transformation).
+//                        placeholder(R.mipmap.ic_launcher_round).
+//                        into(viewHolder.imgHead);
 
             }
             else

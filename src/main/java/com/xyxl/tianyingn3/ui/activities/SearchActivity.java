@@ -102,7 +102,7 @@ public class SearchActivity extends BaseActivity {
             childList.add(mList);
         }
 
-        searchResultAdapter = new SearchResultAdapter(this, groupList, childList);
+        searchResultAdapter = new SearchResultAdapter(this, groupList, childList, filterStr);
         resultList.setAdapter(searchResultAdapter);
 
         int groupCount = resultList.getCount();

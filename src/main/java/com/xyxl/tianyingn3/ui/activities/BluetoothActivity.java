@@ -51,9 +51,9 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
     private Switch switchBt;
     private TextView textBtOnOff;
     private RelativeLayout switchbox;
-    private TextView textBtList;
     private ListView btDeviceList;
-    private Button btnBtSearch;
+
+    private TextView tvDeviceName, tvDeviceMac;
 
     //
     private static final int REQUEST_ENABLE_BT = 1;
@@ -67,9 +67,10 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
+        initBt();
+
         initView();
 
-        initBt();
     }
 
     private void initBt() {
@@ -90,11 +91,20 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
-        if (!mBluetoothAdapter.isEnabled()) {
-            switchBt.setChecked(false);
+    }
 
-        } else {
-            switchBt.setChecked(true);
+    private void initView() {
+        switchBt = (Switch) findViewById(R.id.switchBt);
+        textBtOnOff = (TextView) findViewById(R.id.textBtOnOff);
+        tvDeviceName = (TextView) findViewById(R.id.device_name);
+        tvDeviceMac = (TextView) findViewById(R.id.device_address);
+        switchbox = (RelativeLayout) findViewById(R.id.switchbox);
+        btDeviceList = (ListView) findViewById(R.id.btDeviceList);
+
+        if(BtConnectInfo.getInstance().isConnect())
+        {
+            tvDeviceName.setText(BtConnectInfo.getInstance().getBtName());
+            tvDeviceMac.setText(BtConnectInfo.getInstance().getBtMac());
         }
 
         mLeDeviceListAdapter = new LeDeviceListAdapter();
@@ -204,39 +214,29 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     mBluetoothAdapter.enable();
-                    btnBtSearch.setEnabled(true);
-
+                    scanLeDevice(true);
                 } else {
                     mBluetoothAdapter.disable();
-                    btnBtSearch.setEnabled(false);
 
                 }
             }
         });
-    }
 
-    private void initView() {
-        switchBt = (Switch) findViewById(R.id.switchBt);
-        textBtOnOff = (TextView) findViewById(R.id.textBtOnOff);
-        switchbox = (RelativeLayout) findViewById(R.id.switchbox);
-        textBtList = (TextView) findViewById(R.id.textBtList);
-        btDeviceList = (ListView) findViewById(R.id.btDeviceList);
-        btnBtSearch = (Button) findViewById(R.id.btnBtSearch);
+        if (!mBluetoothAdapter.isEnabled()) {
+            switchBt.setChecked(false);
 
-        btnBtSearch.setOnClickListener(this);
-
-        if(BtConnectInfo.getInstance().isConnect())
-        {
-            textBtList.setText(getResources().getString(R.string.bt_device_list)+":"+BtConnectInfo.getInstance().getBtName());
+        } else {
+            switchBt.setChecked(true);
+            scanLeDevice(true);
         }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnBtSearch:
-                scanLeDevice(true);
-                break;
+//            case R.id.btnBtSearch:
+//                scanLeDevice(true);
+//                break;
         }
     }
 
@@ -470,11 +470,13 @@ public class BluetoothActivity extends BaseActivity implements View.OnClickListe
         if (data != null) {
             if(BtConnectInfo.getInstance().isConnect())
             {
-                textBtList.setText(getResources().getString(R.string.bt_device_list)+":"+BtConnectInfo.getInstance().getBtName());
+                tvDeviceName.setText(BtConnectInfo.getInstance().getBtName());
+                tvDeviceMac.setText(BtConnectInfo.getInstance().getBtMac());
             }
             else
             {
-                textBtList.setText(getResources().getString(R.string.bt_device_list));
+                tvDeviceName.setText("");
+                tvDeviceMac.setText("");
 
             }
         }

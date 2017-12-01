@@ -10,7 +10,7 @@ import com.xyxl.tianyingn3.R;
  * Version : V1.0
  * Introductions : 注册页面
  */
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

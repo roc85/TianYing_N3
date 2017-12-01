@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="70dp">
+    android:layout_height="65dp"
+    android:padding="3dp">
 
     <ImageView
         android:id="@+id/tmHead"
@@ -10,6 +11,9 @@
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="7dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="9dp"
         app:srcCompat="@mipmap/ic_launcher_round" />
 
     <TextView
@@ -17,9 +21,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="14dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginTop="15dp"
         android:layout_toEndOf="@+id/tmHead"
         android:text="TextView"
+        android:textColor="#ff1a1a1a"
         android:textSize="16sp" />
 
     <TextView
@@ -28,15 +34,19 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/tmName"
         android:layout_alignParentEnd="true"
+        android:layout_marginRight="15dp"
         android:text="TextView"
-        android:textSize="16sp" />
+        android:textColor="#ff7d7d7d"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/tmCon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/tmName"
+        android:layout_below="@id/tmName"
+        android:layout_marginTop="5dp"
         android:text="TextView"
-        android:textSize="22sp" />
+        android:textColor="#ff7d7d7d"
+        android:textSize="13sp" />
 </RelativeLayout>

@@ -32,7 +32,7 @@ public class SetHomeBtnActivity extends BaseActivity {
     private List<String> navList = new ArrayList<String>();
     private List<String> moreList = new ArrayList<String>();
     private TextView textTitle;
-    private ImageView imageSave;
+    private TextView imageSave;
     private ImageView imageBack;
     private RelativeLayout titleBox;
     private DragListView dragBtnSetList;
@@ -92,7 +92,7 @@ public class SetHomeBtnActivity extends BaseActivity {
 
     private void initView() {
         textTitle = (TextView) findViewById(R.id.textTitle);
-        imageSave = (ImageView) findViewById(R.id.imageSave);
+        imageSave = (TextView) findViewById(R.id.textSave);
         imageBack = (ImageView) findViewById(R.id.imageBack);
         titleBox = (RelativeLayout) findViewById(R.id.titleBox);
         dragBtnSetList = (DragListView) findViewById(R.id.dragBtnSetList);

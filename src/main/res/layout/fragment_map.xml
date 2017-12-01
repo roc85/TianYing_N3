@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <com.baidu.mapapi.map.MapView
@@ -8,4 +9,83 @@
         android:layout_height="fill_parent"
         android:clickable="true" />
 
+    <RelativeLayout
+        android:id="@+id/mapInfoBox"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginBottom="21dp"
+        android:layout_marginLeft="13dp"
+        android:layout_marginRight="13dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/map_info_box_back">
+
+        <TextView
+            android:id="@+id/textMapInfoName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="19dp"
+            android:layout_marginTop="14dp"
+            android:text="@android:string/unknownName"
+            android:textColor="#ff68e580"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textMapInfoCon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffffff"
+            android:textSize="15sp"
+            android:layout_below="@id/textMapInfoName"
+            android:layout_marginLeft="19dp"
+            android:layout_marginTop="10dp"
+            android:text="TextView" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/img_bigger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/create_massage_add_receiver"
+        android:clickable="true" />
+
+    <ImageView
+        android:id="@+id/img_smaller"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/img_bigger"
+        android:layout_alignParentRight="true"
+
+        android:background="@drawable/emotionstore_progresscancelbtn"
+        android:clickable="true" />
+
+    <ImageView
+        android:id="@+id/img_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/img_smaller"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/location_icon_my_location"
+        android:clickable="true" />
+
+    <com.xyxl.tianyingn3.ui.customview.ClearEditText
+        android:id="@+id/map_search_edit"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="13dp"
+        android:layout_marginRight="13dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/map_search_box_back"
+        android:drawableLeft="@drawable/homepage_nav_icon_find"
+        android:hint="位置搜索"
+        android:maxLines="1"
+        android:paddingLeft="10dp"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
 </RelativeLayout>

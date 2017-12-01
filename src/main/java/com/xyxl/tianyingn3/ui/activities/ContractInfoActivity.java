@@ -20,6 +20,7 @@ import com.xyxl.tianyingn3.R;
 import com.xyxl.tianyingn3.bean.BdCardBean;
 import com.xyxl.tianyingn3.database.Contact_DB;
 import com.xyxl.tianyingn3.database.Message_DB;
+import com.xyxl.tianyingn3.util.DataUtil;
 
 import java.io.File;
 import java.util.List;
@@ -46,6 +47,9 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
     private Button buttonEdit;
     private ImageView imageSendPhone;
 
+    private ImageView ivSendMsg, ivPos, ivShare, ivBack;
+    private TextView tvEdit;
+
     private Contact_DB thisContact;
     private long _id;
     @Override
@@ -56,7 +60,7 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_contract_info);
 
         initData();
-        initView();
+//        initView();
 
     }
 
@@ -68,6 +72,10 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
             {
                 finish();
             }
+            else
+            {
+                initView();
+            }
 //            _id = Contact_DB.getIdViaName(thisContact.getContactName());
         } catch (Exception e) {
             finish();
@@ -78,12 +86,14 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
     private void initView() {
         textName = (TextView) findViewById(R.id.textName);
         imageHead = (ImageView) findViewById(R.id.imageHead);
-        headBox = (RelativeLayout) findViewById(R.id.headBox);
+        ivBack = (ImageView) findViewById(R.id.imageBack);
+//        headBox = (RelativeLayout) findViewById(R.id.headBox);
         imageSendBd = (ImageView) findViewById(R.id.imageSendBd);
         imageSendPhone = (ImageView) findViewById(R.id.imageSendPhone);
         textBdCardNum = (TextView) findViewById(R.id.textBdCardNum);
         bdCardBox = (RelativeLayout) findViewById(R.id.bdCardBox);
         textPhone = (TextView) findViewById(R.id.textPhone);
+        tvEdit = (TextView) findViewById(R.id.textEdit);
         PhoneBox = (RelativeLayout) findViewById(R.id.PhoneBox);
         textremark = (TextView) findViewById(R.id.textremark);
         remarkBox = (RelativeLayout) findViewById(R.id.remarkBox);
@@ -91,34 +101,52 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
         buttonShare = (Button) findViewById(R.id.buttonShare);
         buttonEdit = (Button) findViewById(R.id.buttonEdit);
 
-        buttonDel.setOnClickListener(this);
-        buttonShare.setOnClickListener(this);
-        buttonEdit.setOnClickListener(this);
-        imageSendBd.setOnClickListener(this);
-        imageSendPhone.setOnClickListener(this);
+        ivSendMsg = (ImageView) findViewById(R.id.imageSendMsg);
+        ivPos = (ImageView) findViewById(R.id.imagePos);
+        ivShare = (ImageView) findViewById(R.id.imageShare);
+
+        ivSendMsg.setOnClickListener(this);
+        ivPos.setOnClickListener(this);
+        ivShare.setOnClickListener(this);
+        tvEdit.setOnClickListener(this);
+        ivBack.setOnClickListener(this);
+
+//        buttonDel.setOnClickListener(this);
+//        buttonShare.setOnClickListener(this);
+//        buttonEdit.setOnClickListener(this);
+//        imageSendBd.setOnClickListener(this);
+//        imageSendPhone.setOnClickListener(this);
 
         //
-        Picasso.with(this).load(new File(thisContact.getHead())).
-                transform(transformation).error(R.mipmap.ic_launcher_round).
-                placeholder(R.mipmap.ic_launcher_round).into(imageHead);
+        try
+        {
+            Picasso.with(this).load(new File(thisContact.getHead())).
+                    transform(transformation).error(R.mipmap.ic_launcher_round).
+                    placeholder(R.mipmap.ic_launcher_round).into(imageHead);
+        }
+        catch(Exception e)
+        {
 
-        textName.setText(thisContact.getContactName());
-        if (!TextUtils.isEmpty(thisContact.getBdNum()) || BdCardBean.FormatCardNum("").equals(thisContact.getBdNum())) {
-            textBdCardNum.setText(thisContact.getBdNum());
-        } else {
-            textBdCardNum.setText(getResources().getString(R.string.bd_card_num));
         }
 
-        if (!TextUtils.isEmpty(thisContact.getPhone())) {
+
+        textName.setText(thisContact.getContactName());
+        if (!TextUtils.isEmpty(thisContact.getBdNum()) && DataUtil.isBdNum(thisContact.getBdNum()) ) {
+            textBdCardNum.setText(thisContact.getBdNum());
+        } else {
+            textBdCardNum.setText("");
+        }
+
+        if (!TextUtils.isEmpty(thisContact.getPhone()) && DataUtil.isPhoneNum(thisContact.getPhone())) {
             textPhone.setText(thisContact.getPhone());
         } else {
-            textPhone.setText(getResources().getString(R.string.phone_num));
+            textPhone.setText("");
         }
 
         if (!TextUtils.isEmpty(thisContact.getRemark())) {
             textremark.setText(thisContact.getRemark());
         } else {
-            textremark.setText(getResources().getString(R.string.remark_info));
+            textremark.setText("");
         }
 
         imageSendPhone = (ImageView) findViewById(R.id.imageSendPhone);
@@ -128,6 +156,33 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.textEdit:
+                Intent intent = new Intent(this, NewContactActivity.class);
+//                intent.putExtra("contact",thisContact);
+                intent.putExtra("contact_id",_id);
+                startActivity(intent);
+                break;
+            case R.id.imageSendMsg:
+
+                Message_DB msg = new Message_DB();
+                msg.setMsgType(1);
+                msg.setSendAddress(thisContact.getBdNum());
+                msg.setSendUserName(thisContact.getContactName());
+                msg.setSendUserId(_id);
+                Intent intentmsg = new Intent(ContractInfoActivity.this,ChatActivity.class);
+                intentmsg.putExtra("msg",msg);
+                startActivity(intentmsg);
+                break;
+            case R.id.imagePos:
+
+                break;
+            case R.id.imageShare:
+
+                break;
+            case R.id.imageBack:
+                finish();
+                break;
+
             case R.id.buttonDel:
 
                 Contact_DB tmp = Contact_DB.findById(Contact_DB.class,_id);
@@ -169,21 +224,7 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
 
 
                 break;
-            case R.id.buttonShare:
 
-                break;
-            case R.id.buttonEdit:
-                Intent intent = new Intent(this, NewContactActivity.class);
-//                intent.putExtra("contact",thisContact);
-                intent.putExtra("contact_id",_id);
-                startActivity(intent);
-                break;
-            case R.id.imageSendPhone:
-
-                break;
-            case R.id.imageSendBd:
-
-                break;
         }
     }
 
@@ -221,22 +262,22 @@ public class ContractInfoActivity extends BaseActivity implements View.OnClickLi
                 transform(transformation).placeholder(R.mipmap.ic_launcher_round).into(imageHead);
 
         textName.setText(thisContact.getContactName());
-        if (!TextUtils.isEmpty(thisContact.getBdNum()) || BdCardBean.FormatCardNum("").equals(thisContact.getBdNum())) {
+        if (!TextUtils.isEmpty(thisContact.getBdNum()) && DataUtil.isBdNum(thisContact.getBdNum()) ) {
             textBdCardNum.setText(thisContact.getBdNum());
         } else {
-            textBdCardNum.setText(getResources().getString(R.string.bd_card_num));
+            textBdCardNum.setText("");
         }
 
-        if (!TextUtils.isEmpty(thisContact.getPhone())) {
+        if (!TextUtils.isEmpty(thisContact.getPhone()) && DataUtil.isPhoneNum(thisContact.getPhone())) {
             textPhone.setText(thisContact.getPhone());
         } else {
-            textPhone.setText(getResources().getString(R.string.phone_num));
+            textPhone.setText("");
         }
 
         if (!TextUtils.isEmpty(thisContact.getRemark())) {
             textremark.setText(thisContact.getRemark());
         } else {
-            textremark.setText(getResources().getString(R.string.remark_info));
+            textremark.setText("");
         }
     }
 }
